@@ -65,33 +65,24 @@ PrintChar:	; print char at AL
 	mov bl, 0x07	; light gray
 	int 0x10	; print character
 	ret
-	MOV AH, 0x0E	; Teletype Mode
-	MOV BH, 0x00	; Page zero
-	MOV BL, 0x07	; Light Gray
-	INT 0x10	; Print Character
-	RET
 
-
-;------------------ DATA BLOCK ------------------;
-str1 db 'Hello World', 0	; Hello World
-str2 db 'WHY IS THIS', 0
-
-
-hexChars db '0123456789abcdef'		; Used for hex formatting
-
-PrintHexStr:
+PrintHexStr: 			; print <ax> bytes starting at [si]
+	mov di, si		; initilize the loop registers
+	mov dx, si
+	add dx, ax
 nexthchar:
-	mov al, [si]	; grab next char
-	or al, al	; if char is null term
-	jz exith		; then return
+	cmp di, dx
+	jge exith 		; NO IDEA HOW THIS WORKS
+	mov al, BYTE [di]	; grab next char
 	call PrintHexChar	; else print char
-	inc si		; inc pointer to next char
+	inc di
 	jmp nexthchar	; loop
 	exith:
 	ret
 
 PrintHexChar:
 	;; call PrintChar
+	xor ebx, ebx
 	mov cl, al
 	mov bl, al
 	and bl, 0xf0
@@ -104,11 +95,17 @@ PrintHexChar:
 	call PrintChar
 	ret
 
+;------------------ DATA BLOCK ------------------;
+str1 db 'Hello World', 0	; Hello World
+str2 db 'WHY IS THIS', 0
+
+hexChars db '0123456789abcdef'		; Used for hex formatting
 
 Main:	;main section
 	nop
 	nop
 	mov si, str2
 	call PrintStr
-	mov si, str2
+	mov si, str1
+	mov ax, 10
 	call PrintHexStr	; print string

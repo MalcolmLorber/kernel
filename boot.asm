@@ -14,11 +14,11 @@ st:
 	mov	cx, 0x0002	; floppy cylinder
 	call 	read_sectors_16	; read with above args
 	jnc	0x7e00		; jump to actual code
-halt:				
+halt:
 	cli			; halt if failed, loop
 	hlt
 	jmp halt
-	
+
 read_sectors_16:
 	pusha
 	mov si, 0x02    ; maximum attempts - 1
@@ -34,7 +34,7 @@ read_sectors_16:
 .end:
 	popa
 	retn
-	
+
 read_fail db 'Failure to read from disk.', 13, 10, 0
 	; $ is current line, $$ is first line, db 0 is a 00000000 byte
 	; So, pad the code with 0s until you reach 510 bytes
@@ -44,8 +44,10 @@ times 510 - ($ - $$) db 0
 ;---------------- BOOTLOADER CODE ----------------;
 ls:	mov si, str1	; pointer to string in si
 	call PrintStr	; print string
-	jmp Main			; 
+	call PrintHexStr	; print string
+	jmp Main			;
 	hlt
+
 ;---------------- SCREEN FUNCTIONS ---------------;
 PrintStr:	; print string at SI
 nextChar:
@@ -64,10 +66,52 @@ PrintChar:	; print char at AL
 	mov bl, 0x07	; light gray
 	int 0x10	; print character
 	ret
-;------------------ DATA BLOCK ------------------;
+	MOV AH, 0x0E	; Teletype Mode
+	MOV BH, 0x00	; Page zero
+	MOV BL, 0x07	; Light Gray
+	INT 0x10	; Print Character
+	RET
 
-str1 db 'Hello World', 0		;stuff
+PrintHexStr:
+nexthchar:
+	mov al, [si]	; grab next char
+	or al, al	; if char is null term
+	jz exith		; then return
+	call PrintHexChar	; else print char
+	inc si		; inc pointer to next char
+	jmp nexthchar	; loop
+	exith:
+	ret
+
+PrintHexChar:
+	;; call PrintChar
+	mov cl, al
+	mov bl, al
+	and bl, 0xf0
+	shr bl, 4
+	mov al, BYTE  [hexChars + ebx]
+	call PrintChar
+	mov bl, cl
+	and bl, 0x0f
+	mov al, BYTE  [hexChars + ebx]
+	call PrintChar
+	ret
+
+
+
+;------------------ DATA BLOCK ------------------;
+str1 db 'Hello World', 0	; Hello World
 str2 db 'WHY IS THIS', 0
+
+hexChars db '0123456789abcdef'		; Used for hex formatting
+
+;-------------- PADDING / SIGNATURE -------------;
+	; $ is current line, $$ is first line, db 0 is a 00000000 byte
+	; So, pad the code with 0s until you reach 510 bytes
+TIMES 510 - ($ - $$) DB 0
+; Fill last two bytes (a word) with the MBR signature 0xAA55
+	DW 0xAA55
+>>>>>>> Add hex printing function, hex print hello world
 
 Main:	;main section
 	nop

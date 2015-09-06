@@ -41,13 +41,14 @@ read_fail db 'Failure to read from disk.', 13, 10, 0
 times 510 - ($ - $$) db 0
 ; Fill last two bytes (a word) with the MBR signature 0xAA55
 	dw 0xaa55
-;---------------- BOOTLOADER CODE ----------------;
+
+	
 ls:	mov si, str1	; pointer to string in si
 	call PrintStr	; print string
 	jmp Main			;
 	hlt
 
-;---------------- SCREEN FUNCTIONS ---------------;
+	
 PrintStr:	; print string at SI
 nextChar:
 	mov al, [si]	; grab next char
@@ -95,7 +96,7 @@ PrintHexChar:
 	call PrintChar
 	ret
 
-;------------------ DATA BLOCK ------------------;
+	
 str1 db 'Hello World', 0	; Hello World
 str2 db 'WHY IS THIS', 0
 
@@ -109,3 +110,28 @@ Main:	;main section
 	mov si, str1
 	mov ax, 10
 	call PrintHexStr	; print string
+	mov ax, 0x2401
+	int 0x15
+	;; now to try protected mode...
+	cli
+	lgdt [gdtinfo]		
+	mov eax, cr0
+	or al, 1
+	mov cr0, eax
+
+	jmp 08h:PMain
+
+gdtinfo:
+   dw gdt_end - gdt - 1   ;last byte in table
+   dd gdt                 ;start of table
+
+gdt		dd 0, 0
+flatdesc	db 0xff, 0xff, 0, 0, 0, 10010010b, 11001111b, 0
+gdt_end:
+	db 0x55
+	db 0xAA
+PMain:
+	
+	nop
+	nop
+	hlt

@@ -14,11 +14,11 @@ st:
 	mov	cx, 0x0002	; floppy cylinder
 	call 	read_sectors_16	; read with above args
 	jnc	0x7e00		; jump to actual code
-halt:				
+halt:
 	cli			; halt if failed, loop
 	hlt
 	jmp halt
-	
+
 read_sectors_16:
 	pusha
 	mov si, 0x02    ; maximum attempts - 1
@@ -34,7 +34,7 @@ read_sectors_16:
 .end:
 	popa
 	retn
-	
+
 read_fail db 'Failure to read from disk.', 13, 10, 0
 	; $ is current line, $$ is first line, db 0 is a 00000000 byte
 	; So, pad the code with 0s until you reach 510 bytes
@@ -44,8 +44,9 @@ times 510 - ($ - $$) db 0
 ;---------------- BOOTLOADER CODE ----------------;
 ls:	mov si, str1	; pointer to string in si
 	call PrintStr	; print string
-	jmp Main			; 
+	jmp Main			;
 	hlt
+
 ;---------------- SCREEN FUNCTIONS ---------------;
 PrintStr:	; print string at SI
 nextChar:
@@ -64,13 +65,47 @@ PrintChar:	; print char at AL
 	mov bl, 0x07	; light gray
 	int 0x10	; print character
 	ret
-;------------------ DATA BLOCK ------------------;
 
-str1 db 'Hello World', 0		;stuff
+PrintHexStr: 			; print <ax> bytes starting at [si]
+	mov di, si		; initilize the loop registers
+	mov dx, si
+	add dx, ax
+nexthchar:
+	cmp di, dx
+	jge exith 		; NO IDEA HOW THIS WORKS
+	mov al, BYTE [di]	; grab next char
+	call PrintHexChar	; else print char
+	inc di
+	jmp nexthchar	; loop
+	exith:
+	ret
+
+PrintHexChar:
+	;; call PrintChar
+	xor ebx, ebx
+	mov cl, al
+	mov bl, al
+	and bl, 0xf0
+	shr bl, 4
+	mov al, BYTE  [hexChars + ebx]
+	call PrintChar
+	mov bl, cl
+	and bl, 0x0f
+	mov al, BYTE  [hexChars + ebx]
+	call PrintChar
+	ret
+
+;------------------ DATA BLOCK ------------------;
+str1 db 'Hello World', 0	; Hello World
 str2 db 'WHY IS THIS', 0
+
+hexChars db '0123456789abcdef'		; Used for hex formatting
 
 Main:	;main section
 	nop
 	nop
 	mov si, str2
 	call PrintStr
+	mov si, str1
+	mov ax, 10
+	call PrintHexStr	; print string

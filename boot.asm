@@ -44,7 +44,6 @@ times 510 - ($ - $$) db 0
 ;---------------- BOOTLOADER CODE ----------------;
 ls:	mov si, str1	; pointer to string in si
 	call PrintStr	; print string
-	call PrintHexStr	; print string
 	jmp Main			;
 	hlt
 
@@ -72,6 +71,14 @@ PrintChar:	; print char at AL
 	INT 0x10	; Print Character
 	RET
 
+
+;------------------ DATA BLOCK ------------------;
+str1 db 'Hello World', 0	; Hello World
+str2 db 'WHY IS THIS', 0
+
+
+hexChars db '0123456789abcdef'		; Used for hex formatting
+
 PrintHexStr:
 nexthchar:
 	mov al, [si]	; grab next char
@@ -98,23 +105,10 @@ PrintHexChar:
 	ret
 
 
-
-;------------------ DATA BLOCK ------------------;
-str1 db 'Hello World', 0	; Hello World
-str2 db 'WHY IS THIS', 0
-
-hexChars db '0123456789abcdef'		; Used for hex formatting
-
-;-------------- PADDING / SIGNATURE -------------;
-	; $ is current line, $$ is first line, db 0 is a 00000000 byte
-	; So, pad the code with 0s until you reach 510 bytes
-TIMES 510 - ($ - $$) DB 0
-; Fill last two bytes (a word) with the MBR signature 0xAA55
-	DW 0xAA55
->>>>>>> Add hex printing function, hex print hello world
-
 Main:	;main section
 	nop
 	nop
 	mov si, str2
 	call PrintStr
+	mov si, str2
+	call PrintHexStr	; print string

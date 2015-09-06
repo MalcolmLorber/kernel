@@ -114,22 +114,29 @@ Main:	;main section
 	int 0x15
 	;; now to try protected mode...
 	cli
-	lgdt [gdtinfo]		
+	lgdt [gdt]		
 	mov eax, cr0
 	or al, 1
 	mov cr0, eax
 
 	jmp 08h:PMain
 
-gdtinfo:
-   dw gdt_end - gdt - 1   ;last byte in table
-   dd gdt                 ;start of table
+gdt:
 
-gdt		dd 0, 0
-flatdesc	db 0xff, 0xff, 0, 0, 0, 10010010b, 11001111b, 0
-gdt_end:
-	db 0x55
-	db 0xAA
+	times	16	db	0
+	dw	0xffff				; segment limit
+.src:
+	dw	0
+	db	2
+	db	0x93				; data access rights
+	dw	0
+	dw	0xffff				; segment limit
+.dest:
+	dw	0
+	db	0x10				; load protected-mode kernel to 100000h
+	db	0x93				; data access rights
+	dw	0
+	times	16	db	0
 PMain:
 	
 	nop

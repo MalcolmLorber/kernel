@@ -101,7 +101,9 @@ str1 db 'Hello World', 0	; Hello World
 str2 db 'WHY IS THIS', 0
 
 hexChars db '0123456789abcdef'		; Used for hex formatting
-
+gdtr:	dw 48
+	dw 0x0
+	dw gdt
 Main:	;main section
 	nop
 	nop
@@ -114,23 +116,22 @@ Main:	;main section
 	int 0x15
 	;; now to try protected mode...
 	cli
-gdtr:	dw 0
-	dd 0
+
 setGdt:
-	xor   eax, eax
-	mov   ax, ds
-	shl   eax, 4
-	add   eax, gdt
+	;xor   eax, eax
+	;mov   ax, ds
+	;shl   eax, 4
+	;add   eax, gdt
 	;jp $			
-	mov   [gdtr + 2], eax
+	;mov   [gdtr + 2], eax
 	;jp $			;
-	mov   eax, gdt_end
+	;mov   eax, gdt_end
 	;jp $			
-	sub   eax, gdt			
-	mov   [gdtr], ax
+	;sub   eax, gdt			
+	;mov   [gdtr], ax
 	lgdt [gdtr]		
 	mov eax, cr0
-	or al, 1
+	or eax, 1
 	mov cr0, eax
 
 	jmp 08h:PMain
@@ -149,8 +150,8 @@ gdt:
 	db	0x10				; load protected-mode kernel to 100000h
 	db	0x93				; data access rights
 	dw	0
-	times	16	db	0
-gdt_end:	
+	times	15	db	0
+gdt_end:db 0	
 ;; .null:	times	8	db	0
 ;; .code:	dw	0x0400		; limit (4MiB)
 ;; 	dw	0x0000		; base 0-15
@@ -171,6 +172,7 @@ gdt_end:
 ;; 	db	0xC0
 ;; 	db	0x0C
 PMain:
+	[bits 32]
 	mov si, str1
 	call PrintStr
 	nop

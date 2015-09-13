@@ -101,9 +101,8 @@ str1 db 'Hello World', 0	; Hello World
 str2 db 'WHY IS THIS', 0
 
 hexChars db '0123456789abcdef'		; Used for hex formatting
-gdtr:	dw 48
-	dw 0x0
-	dw gdt
+gdtr:	dw gdt_end - gdt - 1
+	dd gdt
 Main:	;main section
 	nop
 	nop
@@ -133,49 +132,38 @@ setGdt:
 	mov eax, cr0
 	or eax, 1
 	mov cr0, eax
-
 	jmp 08h:PMain
 
 gdt:
-	times	16	db	0
-	dw	0xffff				; segment limit
-.src:
-	dw	0
-	db	2
-	db	0x93				; data access rights
-	dw	0
-	dw	0xffff				; segment limit
-.dest:
-	dw	0
-	db	0x10				; load protected-mode kernel to 100000h
-	db	0x93				; data access rights
-	dw	0
-	times	15	db	0
-gdt_end:db 0	
-;; .null:	times	8	db	0
-;; .code:	dw	0x0400		; limit (4MiB)
-;; 	dw	0x0000		; base 0-15
-;; 	db	0x00		; base 16-23
-;; 	db	0x9A		; access byte
-;; 	db	0xC0		; flags/limit 16-19
-;; 	db	0x04		; base 24-31
-;; .data:	dw	0x0400
-;; 	dw	0x0000
-;; 	db	0x00
-;; 	db	0x92
-;; 	db	0xC0
-;; 	db	0x08
-;; .tss:	dw	0x0400
-;; 	dw	0x0000
-;; 	db	0x00
-;; 	db	0x89
-;; 	db	0xC0
-;; 	db	0x0C
+	dd 0
+	dd 0
+.code:
+	dw 0FFFFh	; limit
+	dw 0		; base low
+	db 0		; base mid
+	db 10011010b	; access
+	db 11001111b	; granularity
+	db 0		; base high
+.data:
+	dw 0FFFFh	; limit
+	dw 0		; base low
+	db 0		; base mid
+	db 10010010b	; access
+	db 11001111b	; granularity
+	db 0		; base high
+gdt_end:
+
+[bits 32]	
 PMain:
-	[bits 32]
-	mov si, str1
-	call PrintStr
-	nop
-	nop
-	hlt
+	
+	mov	ax, 0x10		; set data segments to data selector (0x10)
+	mov	ds, ax
+	mov	ss, ax
+	mov	es, ax
+	mov	esp, 90000h
+	;mov si, str1
+	;call PrintStr
+	;nop
+	;nop
+	hlt			
 	jp $

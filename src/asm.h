@@ -1,9 +1,19 @@
 /*
-  asm.h exports archatecture specific functions for hardware interaction
+  asm.h contains x86 specific functions for executing low level code
 */
 
+#pragma once
 #include <stdint.h>
 
-// Functions for reading and writing to/from x86 IO ports
-static inline void outb(uint16_t port, uint8_t val);
-static inline uint8_t inb(uint16_t port);
+// Wrapper for outb
+// Stolen from http://wiki.osdev.org/Inline_Assembly/Examples
+inline void outb(uint16_t port, uint8_t val) {
+    asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+}
+
+// Wrapper for inb
+inline uint8_t inb(uint16_t port) {
+    uint8_t ret;
+    asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
+    return ret;
+}

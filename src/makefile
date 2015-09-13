@@ -6,3 +6,4 @@ all:
 	$C -T linker.ld -o myos.bin -ffreestanding -O2 -nostdlib *.o -lgcc
 
 clean:
+	rm *.o *.bin

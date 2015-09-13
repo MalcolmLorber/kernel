@@ -27,7 +27,7 @@ void serial_writechar(char a) {
 }
 
 void serial_writestring(char* s) {
-    while (s) {
+    while (*s) {
         serial_writechar(*s);
         s++;
     }

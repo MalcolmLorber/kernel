@@ -41,13 +41,14 @@ read_fail db 'Failure to read from disk.', 13, 10, 0
 times 510 - ($ - $$) db 0
 ; Fill last two bytes (a word) with the MBR signature 0xAA55
 	dw 0xaa55
-;---------------- BOOTLOADER CODE ----------------;
+
+	
 ls:	mov si, str1	; pointer to string in si
 	call PrintStr	; print string
 	jmp Main			;
 	hlt
 
-;---------------- SCREEN FUNCTIONS ---------------;
+	
 PrintStr:	; print string at SI
 nextChar:
 	mov al, [si]	; grab next char
@@ -95,12 +96,13 @@ PrintHexChar:
 	call PrintChar
 	ret
 
-;------------------ DATA BLOCK ------------------;
+	
 str1 db 'Hello World', 0	; Hello World
 str2 db 'WHY IS THIS', 0
 
 hexChars db '0123456789abcdef'		; Used for hex formatting
-
+gdtr:	dw gdt_end - gdt - 1
+	dd gdt
 Main:	;main section
 	nop
 	nop
@@ -109,3 +111,59 @@ Main:	;main section
 	mov si, str1
 	mov ax, 10
 	call PrintHexStr	; print string
+	mov ax, 0x2401
+	int 0x15
+	;; now to try protected mode...
+	cli
+
+setGdt:
+	;xor   eax, eax
+	;mov   ax, ds
+	;shl   eax, 4
+	;add   eax, gdt
+	;jp $			
+	;mov   [gdtr + 2], eax
+	;jp $			;
+	;mov   eax, gdt_end
+	;jp $			
+	;sub   eax, gdt			
+	;mov   [gdtr], ax
+	lgdt [gdtr]		
+	mov eax, cr0
+	or eax, 1
+	mov cr0, eax
+	jmp 08h:PMain
+
+gdt:
+	dd 0
+	dd 0
+.code:
+	dw 0FFFFh	; limit
+	dw 0		; base low
+	db 0		; base mid
+	db 10011010b	; access
+	db 11001111b	; granularity
+	db 0		; base high
+.data:
+	dw 0FFFFh	; limit
+	dw 0		; base low
+	db 0		; base mid
+	db 10010010b	; access
+	db 11001111b	; granularity
+	db 0		; base high
+gdt_end:
+
+[bits 32]	
+PMain:
+	
+	mov	ax, 0x10		; set data segments to data selector (0x10)
+	mov	ds, ax
+	mov	ss, ax
+	mov	es, ax
+	mov	esp, 90000h
+	;mov si, str1
+	;call PrintStr
+	;nop
+	;nop
+	hlt			
+	jp $

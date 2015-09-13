@@ -7,3 +7,8 @@ The following are commands for compiling and running the assembly:
 
 `nasm boot.asm -f bin -o boot.bin`   
 `qemu-system-i386 boot.bin`
+
+To run the kernel, run these commands from the src directory
+
+`make`   
+`qemu-system-i386 -kernel myos.bin -serial file:serial.log`

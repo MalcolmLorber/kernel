@@ -13,8 +13,11 @@
 #error "This tutorial needs to be compiled with a ix86-elf compiler"
 #endif
 
+#include <stdint.h>
+
 #include "serial.h"
 #include "term.h"
+#include "mem.h"
 
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
@@ -31,4 +34,14 @@ void kernel_main() {
     serial_writestring("First Serial Test!\n");
     terminal_writestring("Hello, kernel World!\n");
     serial_writestring("Second Serial Test\n");
+
+    // Enable paging of memory. For now there is only one virtual
+    // memory space defined by page_dir
+    uint32_t* page_dir;
+    page_dir = initiate_directory();
+    initiate_page_table(page_dir);
+    loadPageDirectory(page_dir);
+    enablePaging();
+
+    serial_writestring("Finished Initilizing memory\n");
 }

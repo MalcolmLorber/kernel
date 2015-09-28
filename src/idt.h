@@ -13,18 +13,18 @@
 #define IDT_PR 0x80
 
 //voodoo magic. find out what it does.
-typedef void (_cdecl *IRQ_HANDLER)(void);
+typedef void (*IRQ_HANDLER)(void);
 
-struct idt_desc{
+typedef struct {
 	uint16_t low_base;
 	uint16_t code_sel;
 	uint8_t	 reserved;
 	uint8_t	 flags;
 	uint16_t high_base;
-};
+} idt_desc;
 
 extern idt_desc* get_ir (uint32_t i);
-extern int install_ir (uint32_t i, uint16_t flags, uint16_c code_sel, IRQ_HANDLER);
+extern int install_ir (uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);
 extern int idt_init (uint16_t code_sel);
 
 #endif

@@ -15,11 +15,11 @@
 typedef void (*IRQ_HANDLER)(void);
 
 typedef struct {
-	uint16_t low_base;
-	uint16_t code_sel;
-	uint8_t	 reserved;
-	uint8_t	 flags;
-	uint16_t high_base;
+  uint16_t low_base;
+  uint16_t code_sel;
+  uint8_t  reserved;
+  uint8_t  flags;
+  uint16_t high_base;
 } idt_desc;
 
 extern idt_desc* get_ir (uint32_t i);

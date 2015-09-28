@@ -12,7 +12,6 @@
 #define IDT_R3 0x60
 #define IDT_PR 0x80
 
-//voodoo magic. find out what it does.
 typedef void (*IRQ_HANDLER)(void);
 
 typedef struct {

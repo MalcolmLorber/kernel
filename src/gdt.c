@@ -34,7 +34,7 @@ gdt_desc* gdt_get_desc (int i) {
     return 0;
   return &_gdt[i];
 }
-int i86_gdt_initialize () {
+int gdt_init() {
   _gdtr.limit = (sizeof (gdt_desc) * MAX_GDT_DESC)-1;
   _gdtr.base = (uint32_t)&_gdt[0];
   //null

@@ -3,13 +3,13 @@
 typedef struct{
   uint16_t limit;
   uint32_t base;
-}gdtr;
+}__attribute__((packed)) gdtr;
 
 static gdt_desc _gdt [MAX_GDT_DESC];
 static gdtr _gdtr;
 
 static void gdt_install () {
-  //TODO: VOODOO MAGIC
+  asm volatile("lgdt [%0]": : "p"(&_gdtr));
 }
 
 void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran)

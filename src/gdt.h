@@ -24,7 +24,7 @@ typedef struct{
   uint8_t  flags;
   uint8_t  gran;
   uint8_t  high_base;
-} gdt_desc;
+} __attribute__((packed)) gdt_desc;
 
 extern void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran);
 extern gdt_desc* gdt_get_desc(int i);

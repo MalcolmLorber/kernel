@@ -17,14 +17,14 @@
 #define GDT_GR_32 0x40
 #define GDT_GR_PG 0x80
 
-struct gdt_desc {
+typedef struct{
 uint16_t lim;
 uint16_t low_base;
 uint8_t  mid_base;
 uint8_t  flags;
 uint8_t  gran;
 uint8_t  high_base;
-};
+} gdt_desc;
 
 extern void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran);
 extern gdt_desc* gdt_get_desc(int i);

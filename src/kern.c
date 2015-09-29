@@ -5,6 +5,8 @@
 #include "serial.h"
 #include "term.h"
 #include "mem.h"
+#include "gdt.h"
+#include "idt.h"
 
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
@@ -13,6 +15,8 @@ void kernel_main() {
 	/* Initialize terminal and serial interfaces */
 	terminal_initialize();
     serial_init();
+    gdt_init();
+    idt_init(0x0);
 
 	/* Since there is no support for newlines in terminal_putchar
          * yet, '\n' will produce some VGA specific character instead.

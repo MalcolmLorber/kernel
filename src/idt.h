@@ -20,7 +20,7 @@ typedef struct {
   uint8_t  reserved;
   uint8_t  flags;
   uint16_t high_base;
-} __attibute__((packed)) idt_desc;
+}__attribute__((packed)) idt_desc;
 
 extern idt_desc* get_ir (uint32_t i);
 extern int install_ir (uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);

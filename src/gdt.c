@@ -8,9 +8,10 @@ typedef struct{
 static gdt_desc _gdt [MAX_GDT_DESC];
 static gdtr _gdtr;
 
-static void gdt_install () {
-  asm volatile("lgdt [%0]": : "p"(&_gdtr));
-}
+/*static void gdt_install () {
+  asm volatile("lgdt (%0)": : "p"(&_gdtr));
+}*/
+extern void gdt_install(gdtr _gdtr);
 
 void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran)
 {
@@ -43,6 +44,6 @@ int gdt_init() {
   gdt_set_desc(1,0,0xffffffff, GDT_RW|GDT_EXE|GDT_CDT|GDT_MEM, GDT_GR_PG|GDT_GR_32|GDT_GR_HI);
   //data
   gdt_set_desc(2,0,0xffffffff, GDT_RW|GDT_CDT|GDT_MEM, GDT_GR_PG|GDT_GR_32|GDT_GR_HI);
-  gdt_install();  
+  gdt_install(_gdtr);  
   return 0;
 }

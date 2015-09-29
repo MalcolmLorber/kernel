@@ -8,10 +8,11 @@ typedef struct{
 static idt_desc _idt [MAX_IDT_INT];
 static idtr _idtr;
 
-static void idt_install () {
+/*static void idt_install () {
   //TODO: VOODOO MAGIC
-  asm volatile ("lidt [%0]": : "p"(&_idtr));
-}
+  asm volatile ("lidt (%0)": : "p"(&(_idtr)));
+  }*/
+extern void idt_install(idtr _idtr);
 static void default_handler () {
   //DEBUG OUTPUT MAYBE?
   for(;;);
@@ -41,6 +42,6 @@ int idt_init (uint16_t code_sel) {
   memset ((void*)&_idt[0], 0, sizeof (idt_desc) * MAX_IDT_INT-1);
   for (int i=0; i<MAX_IDT_INT; i++)
     install_ir (i, IDT_PR|IDT_32,code_sel,(IRQ_HANDLER)default_handler);
-  idt_install ();
+  idt_install (_idtr);
   return 0;
 }

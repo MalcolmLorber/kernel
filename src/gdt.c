@@ -1,17 +1,21 @@
 #include "gdt.h"
 #include "string.h"
-typedef struct{
-  uint16_t limit;
-  uint32_t base;
-}__attribute__((packed)) gdtr;
+
+uint16_t gdt_limit;
+uint32_t gdt_base;
 
 static gdt_desc _gdt [MAX_GDT_DESC];
-static gdtr _gdtr;
 
-extern void gdt_install(gdtr _gdtr);
-
-void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran)
-{
+static void gdt_install(){
+  struct{
+    uint16_t limit;
+    uint32_t base;
+  }__attribute__((packed)) gdtr;
+  gdtr.limit = gdt_limit;
+  gdtr.base = gdt_base;
+  asm volatile ("lgdt (%0)": :"r"(&gdtr));
+}
+void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran){
   if (i > MAX_GDT_DESC)
     return;
   memset ((void*)&_gdt[i], 0, sizeof (gdt_desc));
@@ -32,14 +36,14 @@ gdt_desc* gdt_get_desc (int i) {
   return &_gdt[i];
 }
 int gdt_init() {
-  _gdtr.limit = (sizeof (gdt_desc) * MAX_GDT_DESC)-1;
-  _gdtr.base = (uint32_t)&_gdt[0];
+  gdt_limit = (sizeof (gdt_desc) * MAX_GDT_DESC)-1;
+  gdt_base = (uint32_t)&_gdt[0];
   //null
   gdt_set_desc(0, 0, 0, 0, 0);
   //code
   gdt_set_desc(1,0,0xffffffff, GDT_RW|GDT_EXE|GDT_CDT|GDT_MEM, GDT_GR_PG|GDT_GR_32|GDT_GR_HI);
   //data
   gdt_set_desc(2,0,0xffffffff, GDT_RW|GDT_CDT|GDT_MEM, GDT_GR_PG|GDT_GR_32|GDT_GR_HI);
-  gdt_install(_gdtr);  
+  gdt_install();
   return 0;
 }

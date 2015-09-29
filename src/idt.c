@@ -1,16 +1,25 @@
 #include "idt.h"
 #include "string.h"
-typedef struct{
-  uint16_t limit;
-  uint32_t base;
-} __attribute__((packed)) idtr;
+#include "serial.h"
+
+uint16_t idt_limit;
+uint32_t idt_base;
 
 static idt_desc _idt [MAX_IDT_INT];
-static idtr _idtr;
 
-extern void idt_install(idtr _idtr);
+static void idt_install(){
+  struct{
+    uint16_t limit;
+    uint32_t base;
+  } __attribute__((packed)) idtr;
+  idtr.limit = idt_limit;
+  idtr.base = idt_base;
+  asm volatile ("lidt (%0)": :"r"(&idtr));
+}
+
 static void default_handler () {
   //DEBUG OUTPUT MAYBE?
+  serial_writestring("int caught\n");
   for(;;);
 }
 
@@ -24,7 +33,7 @@ int install_ir (uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER irq) 
     return 0;
   if (!irq)
     return 0;
-  uint64_t uiBase = (uint64_t)&(*irq);
+  uint64_t uiBase = (uintptr_t)(&(*irq));
   _idt[i].low_base  = (uint16_t)(uiBase & 0xffff);
   _idt[i].high_base = (uint16_t)((uiBase >> 16) & 0xffff);
   _idt[i].reserved  = 0;
@@ -33,11 +42,11 @@ int install_ir (uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER irq) 
   return 0;
 }
 int idt_init (uint16_t code_sel) {
-  _idtr.limit = sizeof (idt_desc) * MAX_IDT_INT -1;
-  _idtr.base  = (uint32_t)&_idt[0];
+  idt_limit = sizeof (idt_desc) * MAX_IDT_INT -1;
+  idt_base  = (uint32_t)&_idt[0];
   memset ((void*)&_idt[0], 0, sizeof (idt_desc) * MAX_IDT_INT-1);
   for (int i=0; i<MAX_IDT_INT; i++)
     install_ir (i, IDT_PR|IDT_32,code_sel,(IRQ_HANDLER)default_handler);
-  idt_install (_idtr);
+  idt_install ();
   return 0;
 }

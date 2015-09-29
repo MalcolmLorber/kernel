@@ -8,9 +8,6 @@ typedef struct{
 static gdt_desc _gdt [MAX_GDT_DESC];
 static gdtr _gdtr;
 
-/*static void gdt_install () {
-  asm volatile("lgdt (%0)": : "p"(&_gdtr));
-}*/
 extern void gdt_install(gdtr _gdtr);
 
 void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran)
@@ -24,7 +21,6 @@ void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uin
   _gdt[i].high_base = (uint8_t)((base >> 24) & 0xff);
   _gdt[i].lim	    = (uint16_t)(limit & 0xffff);
   
-  //! set flags and grandularity bytes
   _gdt[i].flags = access;
   _gdt[i].gran = (uint8_t)((limit >> 16) & 0x0f);
   _gdt[i].gran |= gran & 0xf0;

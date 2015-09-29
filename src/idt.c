@@ -8,10 +8,6 @@ typedef struct{
 static idt_desc _idt [MAX_IDT_INT];
 static idtr _idtr;
 
-/*static void idt_install () {
-  //TODO: VOODOO MAGIC
-  asm volatile ("lidt (%0)": : "p"(&(_idtr)));
-  }*/
 extern void idt_install(idtr _idtr);
 static void default_handler () {
   //DEBUG OUTPUT MAYBE?

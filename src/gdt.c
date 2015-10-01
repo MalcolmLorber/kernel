@@ -1,12 +1,15 @@
 #include "gdt.h"
 #include "string.h"
+#include "serial.h"
+#include "term.h"
 
 uint16_t gdt_limit;
 uint32_t gdt_base;
 
-static gdt_desc _gdt [MAX_GDT_DESC];
+gdt_desc _gdt [MAX_GDT_DESC];
 
-static void gdt_install(){
+#define set_cs( cs ) asm volatile ( "ljmp %0, $1337f \n\t 1337: \n\t" :: "i"(cs) )
+void gdt_install(){
   struct{
     uint16_t limit;
     uint32_t base;
@@ -14,6 +17,20 @@ static void gdt_install(){
   gdtr.limit = gdt_limit;
   gdtr.base = gdt_base;
   asm volatile ("lgdt (%0)": :"r"(&gdtr));
+  //serial_writestring("gdt installed, now setting cs\n");
+  set_cs(8);
+  //serial_writestring("cs set, setting ds\n");
+  //asm volatile ("ljmp $0x8,$1f;		
+  //               1:		
+  asm volatile("               mov $0x10, %ax;\
+                 mov %ax, %ds;\
+                 mov %ax, %es;\
+                 mov %ax, %fs;\
+                 mov %ax, %gs;\
+                 mov %ax, %ss;");
+  //serial_writestring("ds set, we done here. moving on to idt\n");
+  //terminal_writestring("");
+  strlen("");
 }
 void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran){
   if (i > MAX_GDT_DESC)
@@ -30,7 +47,6 @@ void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uin
   _gdt[i].gran |= gran & 0xf0;
 }
 gdt_desc* gdt_get_desc (int i) {
-
   if (i > MAX_GDT_DESC)
     return 0;
   return &_gdt[i];
@@ -44,6 +60,7 @@ int gdt_init() {
   gdt_set_desc(1,0,0xffffffff, GDT_RW|GDT_EXE|GDT_CDT|GDT_MEM, GDT_GR_PG|GDT_GR_32|GDT_GR_HI);
   //data
   gdt_set_desc(2,0,0xffffffff, GDT_RW|GDT_CDT|GDT_MEM, GDT_GR_PG|GDT_GR_32|GDT_GR_HI);
+  //serial_writestring("gdt filled, now installing\n");
   gdt_install();
   return 0;
 }

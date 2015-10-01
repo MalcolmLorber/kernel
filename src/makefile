@@ -1,4 +1,4 @@
-C=/home/adam/college/kernel/cross/bin/i686-elf-gcc
+C=i686-elf-gcc
 
 all:
 	/usr/bin/nasm -felf32 head.asm -o boot.o

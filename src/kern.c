@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "string.h"
 #include "serial.h"
 #include "term.h"
 #include "mem.h"
@@ -13,18 +14,23 @@ extern "C" /* Use C linkage for kernel_main. */
 #endif
 void kernel_main() {
 	/* Initialize terminal and serial interfaces */
-	terminal_initialize();
+  terminal_initialize();
     serial_init();
+    
+    char b[2];
+    int a = strlen("");
+    itoa(a,b);
+    terminal_writestring(b);
     gdt_init();
-    idt_init(0x0);
+    idt_init(0x8);
 
 	/* Since there is no support for newlines in terminal_putchar
          * yet, '\n' will produce some VGA specific character instead.
          * This is normal.
          */
-    serial_writestring("First Serial Test!\n");
+    serial_writestring("IDT initialized\n");
     terminal_writestring("Hello, kernel World!\n");
-    serial_writestring("Second Serial Test\n");
+    //serial_writestring("Second Serial Test\n");
 
     // Enable paging of memory. For now there is only one virtual
     // memory space defined by page_dir
@@ -35,4 +41,7 @@ void kernel_main() {
     enablePaging();
 
     serial_writestring("Finished Initilizing memory\n");
+    asm ("int $0x80");
+    asm ("int $0x90");
+    asm ("hlt");
 }

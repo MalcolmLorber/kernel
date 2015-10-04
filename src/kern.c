@@ -13,14 +13,10 @@
 extern "C" /* Use C linkage for kernel_main. */
 #endif
 void kernel_main() {
-	/* Initialize terminal and serial interfaces */
-  terminal_initialize();
+    /* Initialize terminal and serial interfaces */
+    terminal_initialize();
     serial_init();
     
-    char b[2];
-    int a = strlen("");
-    itoa(a,b);
-    terminal_writestring(b);
     gdt_init();
     idt_init(0x8);
 

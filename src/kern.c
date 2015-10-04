@@ -16,7 +16,6 @@ void kernel_main() {
     /* Initialize terminal and serial interfaces */
     terminal_initialize();
     serial_init();
-    
     gdt_init();
     idt_init(0x8);
 

@@ -9,12 +9,14 @@ idt_desc _idt [MAX_IDT_INT];
 
 void idt_install() {
     struct{
-	uint16_t limit;
-	uint32_t base;
+        uint16_t limit;
+        uint32_t base;
     } __attribute__((packed)) idtr;
     idtr.limit = idt_limit;
     idtr.base = idt_base;
     char f[20];
+    itoa(idtr.limit, f);
+    itoa(idtr.base, f);
     asm volatile ("lidt (%0)": :"r"(&idtr));
 }
 

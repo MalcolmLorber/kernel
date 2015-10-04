@@ -1,7 +1,7 @@
 #include "gdt.h"
 #include "string.h"
 #include "serial.h"
-#include "term.h"
+//#include "term.h"
 
 uint16_t gdt_limit;
 uint32_t gdt_base;
@@ -18,7 +18,7 @@ void gdt_install(){
     gdtr.base = gdt_base;
     asm volatile ("lgdt (%0)": :"r"(&gdtr));
     set_cs(8);
-    asm volatile("mov $0x10, %ax;\
+    asm volatile("mov $0x10, %ax;               \
                  mov %ax, %ds;			\
                  mov %ax, %es;			\
                  mov %ax, %fs;			\

@@ -22,3 +22,10 @@ void itoa(int n, char s[])
      s[i] = '\0';
      //reverse(s);
  }
+
+size_t strlen(const char* str) {
+	size_t ret = 0;
+	while ( str[ret] != 0 )
+		ret++;
+	return ret;
+}

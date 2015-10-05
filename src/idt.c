@@ -53,9 +53,6 @@ int idt_init (uint16_t code_sel) {
     for (int i=0; i<MAX_IDT_INT; i++)
 	install_ir (i, IDT_PR|IDT_32,code_sel,(IRQ_HANDLER)default_handler);
     idt_install();
-    char f[20];
-    itoa((uintptr_t)&_idt,f);
-    //serial_writestring(f);
     return 0;
 }
 #pragma GCC pop_options

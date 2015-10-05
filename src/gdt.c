@@ -1,14 +1,15 @@
 #include "gdt.h"
 #include "string.h"
 #include "serial.h"
-//#include "term.h"
+
+#pragma GCC push_options
+#pragma GCC optimize ("0")
 
 uint16_t gdt_limit;
 uint32_t gdt_base;
 
 gdt_desc _gdt [MAX_GDT_DESC];
 
-#define set_cs( cs ) asm volatile ( "ljmp %0, $1337f \n\t 1337: \n\t" :: "i"(cs) )
 void gdt_install(){
     struct{
         uint16_t limit;
@@ -17,14 +18,13 @@ void gdt_install(){
     gdtr.limit = gdt_limit;
     gdtr.base = gdt_base;
     asm volatile ("lgdt (%0)": :"r"(&gdtr));
-    set_cs(8);
+    asm volatile ( "ljmp %0, $1337f \n\t 1337: \n\t" :: "i"(8) );
     asm volatile("mov $0x10, %ax;               \
                  mov %ax, %ds;			\
                  mov %ax, %es;			\
                  mov %ax, %fs;			\
                  mov %ax, %gs;			\
                  mov %ax, %ss;");
-    strlen("");
 }
 void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran){
     if (i > MAX_GDT_DESC)
@@ -58,3 +58,4 @@ int gdt_init() {
     gdt_install();
     return 0;
 }
+#pragma GCC pop_options

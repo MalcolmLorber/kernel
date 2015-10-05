@@ -2,6 +2,9 @@
 #include "string.h"
 #include "serial.h"
 
+#pragma GCC push_options
+#pragma GCC optimize ("0")
+
 uint16_t idt_limit;
 uint32_t idt_base;
 
@@ -14,9 +17,6 @@ void idt_install() {
     } __attribute__((packed)) idtr;
     idtr.limit = idt_limit;
     idtr.base = idt_base;
-    char f[20];
-    itoa(idtr.limit, f);
-    itoa(idtr.base, f);
     asm volatile ("lidt (%0)": :"r"(&idtr));
 }
 
@@ -58,3 +58,4 @@ int idt_init (uint16_t code_sel) {
     //serial_writestring(f);
     return 0;
 }
+#pragma GCC pop_options

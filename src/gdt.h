@@ -17,7 +17,8 @@
 #define GDT_GR_32 0x40
 #define GDT_GR_PG 0x80
 
-typedef struct{
+typedef struct
+{
     uint16_t lim;
     uint16_t low_base;
     uint8_t  mid_base;

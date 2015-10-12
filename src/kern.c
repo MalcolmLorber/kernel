@@ -12,7 +12,8 @@
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
 #endif
-void kernel_main() {
+void kernel_main() 
+{
     /* Initialize terminal and serial interfaces */
     terminal_initialize();
     serial_init();

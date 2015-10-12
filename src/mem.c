@@ -13,7 +13,8 @@ page_directory_entry page_directory[1024] __attribute__((aligned(4096)));
 // only page table in the page directory
 page_table_entry page_table_one[1024] __attribute__((aligned(4096)));
 
-page_directory_entry* initiate_directory() {
+page_directory_entry* initiate_directory() 
+{
     // set each entry to not present
     int i;
     for(i = 0; i < 1024; i++)
@@ -30,7 +31,8 @@ page_directory_entry* initiate_directory() {
     return page_directory;
 }
 
-void initiate_page_table(page_directory_entry* page_dir) {
+void initiate_page_table(page_directory_entry* page_dir) 
+{
     // holds the physical address where we want to start mapping these pages to.
     // in this case, we want to map these pages to the very beginning of memory.
     unsigned int i;

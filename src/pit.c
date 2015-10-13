@@ -9,7 +9,7 @@ void pit_irq()
 {
     asm volatile ("add %esp, 12; pushad");
     _pit_ticks++;
-    pic_command(PIC_OCW2_EOI, 0);
+    pic_command(0, PIC_OCW2_EOI);
     asm volatile("popad; iretd");
 }
 

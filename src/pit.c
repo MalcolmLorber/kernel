@@ -9,7 +9,7 @@ void pit_irq()
 {
     asm volatile ("add %esp, 12; pushad");
     _pit_ticks++;
-    //TODO: NEED TO SEND DONE MESSAGE BACK
+    pic_command(PIC_OCW2_EOI, 0);
     asm volatile("popad; iretd");
 }
 
@@ -67,7 +67,6 @@ void pit_start_counter(uint32_t frequency, uint8_t counter, uint8_t mode)
 
 void pit_init();
 {
-    //TODO: NEED TO SET INT 32 TO PIT IRQ HANDLER
     install_ir(32, IDT_PR|IDT_32, 0x8, pit_irq);
     _pit_is_init = true;
 }

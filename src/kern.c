@@ -8,6 +8,7 @@
 #include "mem.h"
 #include "gdt.h"
 #include "idt.h"
+#include "test.h"
 
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
@@ -37,10 +38,9 @@ void kernel_main()
     enablePaging();
 
     serial_writestring("Finished Initilizing memory\n");
-    asm ("int $0x80");
-    asm ("int $0x90");
     int o=0;
     int j=5/o;
     serial_hexword(j);
-    asm ("hlt");
+    test_mem();
+    test_idt();
 }

@@ -28,6 +28,10 @@ page_directory_entry* initiate_directory()
         page_directory[i] |= PAGE_WRITABLE;
     }
 
+    // Set last directory entry to point back
+    page_directory[1023] = (uint32_t) page_directory;
+    page_directory[1023] |= PAGE_WRITABLE | PAGE_PRESENT;
+
     return page_directory;
 }
 

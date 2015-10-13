@@ -1,5 +1,6 @@
 #include "pit.h"
 #include "pic.h"
+#include "idt.h"
 
 static volatile uint32_t _pit_ticks = 0;
 static bool _pit_is_init = false;
@@ -67,6 +68,7 @@ void pit_start_counter(uint32_t frequency, uint8_t counter, uint8_t mode)
 void pit_init();
 {
     //TODO: NEED TO SET INT 32 TO PIT IRQ HANDLER
+    install_ir(32, IDT_PR|IDT_32, 0x8, pit_irq);
     _pit_is_init = true;
 }
 

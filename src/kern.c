@@ -1,4 +1,9 @@
-#include <stdbool.h> /* C doesn't have booleans by default. */
+/*
+  kern.c is where the c code starts, as invoked by our heading
+  assembly. It should only contain high level code
+*/
+
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,11 +14,10 @@
 #include "gdt.h"
 #include "idt.h"
 #include "test.h"
+#include "multiboot.h"
 
-#if defined(__cplusplus)
-extern "C" /* Use C linkage for kernel_main. */
-#endif
-void kernel_main() 
+// The parameters passed here ultimately come through the bootloader
+void kernel_main(multiboot_info* mbd, uint32_t magic)
 {
     /* Initialize terminal and serial interfaces */
     terminal_initialize();
@@ -28,6 +32,11 @@ void kernel_main()
     serial_writestring("IDT initialized\n");
     terminal_writestring("Hello, kernel World!\n");
     //serial_writestring("Second Serial Test\n");
+
+    serial_hexstring(&magic, 4);
+    serial_writestring("\n");
+    serial_hexstring(&(mbd->flags), 8);
+    serial_writestring("\n");
 
     // Enable paging of memory. For now there is only one virtual
     // memory space defined by page_dir

@@ -33,7 +33,7 @@ idt_desc* get_ir(uint32_t i)
 {
     if (i > MAX_IDT_INT)
     {
-	return 0;
+	    return 0;
     }
     return &_idt[i];
 }
@@ -42,11 +42,11 @@ int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER irq)
 {
     if (i > MAX_IDT_INT)
     {
-	return 0;
+	    return 0;
     }
     if (!irq)
     {
-	return 0;
+	    return 0;
     }
     uint64_t uiBase   = (uintptr_t)(&(*irq));
     _idt[i].low_base  = (uint16_t)(uiBase & 0xffff);
@@ -64,7 +64,7 @@ int idt_init(uint16_t code_sel)
     memset ((void*)&_idt[0], 0, sizeof (idt_desc) * MAX_IDT_INT-1);
     for (int i=0; i<MAX_IDT_INT; i++)
     {
-	install_ir (i, IDT_PR|IDT_32, code_sel, (IRQ_HANDLER)default_handler);
+	    install_ir (i, IDT_PR|IDT_32, code_sel, (IRQ_HANDLER)default_handler);
     }
     idt_install();
     return 0;

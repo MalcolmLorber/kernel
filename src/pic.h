@@ -17,7 +17,6 @@
 #define PIC_IRQ_AUXIL 4
 #define PIC_IRQ_FPU   5
 #define PIC_IRQ_HDC   6
-#endif
 
 //OCW2 masks
 #define	PIC_OCW2_L1   0x01	        
@@ -87,3 +86,5 @@ void pic_write(uint16_t pic, uint8_t data);
 void pic_command(uint16_t pic, uint8_t cmd);
 void pic_mask_irq(uint16_t pic, uint8_t irqmask);
 void pic_init(uint8_t base0, uint8_t base1);
+
+#endif

@@ -19,3 +19,13 @@ inline uint8_t inb(uint16_t port)
     asm volatile ("inb %1, %0" : "=a"(ret) : "Nd"(port));
     return ret;
 }
+
+inline void disable_int()
+{
+    asm volatile ("cli");
+}
+
+inline void enable_int()
+{
+    asm volatile ("sti");
+}

@@ -11,15 +11,15 @@ static bool _pit_is_init = false;
 
 void pit_irq()
 {
-    asm volatile ("add %esp, 12; pushad");
+    asm volatile ("add %esp, 12; pusha");
     _pit_ticks++;
     pic_command(0, PIC_OCW2_EOI);
-    asm volatile("popad; iretd");
+    asm volatile("popa; iret");
 }
 
 void pit_command(uint8_t cmd)
 {
-    outb(PIC_REG_COMD, cmd);
+    outb(PIT_REG_COMD, cmd);
 }
 
 void pit_write(uint16_t data, uint8_t counter)
@@ -48,7 +48,7 @@ uint32_t pit_get_tick()
     return _pit_ticks;
 }
 
-void pit_start_counter(uint32_t frequency, uint8_t counter, uint8_t mode)
+void pit_start_counter(uint32_t freq, uint8_t counter, uint8_t mode)
 {
     if(freq == 0)
     {
@@ -69,7 +69,7 @@ void pit_start_counter(uint32_t frequency, uint8_t counter, uint8_t mode)
     _pit_ticks = 0;
 }
 
-void pit_init();
+void pit_init()
 {
     install_ir(32, IDT_PR|IDT_32, 0x8, pit_irq);
     _pit_is_init = true;

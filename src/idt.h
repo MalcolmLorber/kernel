@@ -14,7 +14,8 @@
 
 typedef void (*IRQ_HANDLER)(void);
 
-typedef struct {
+typedef struct 
+{
     uint16_t low_base;
     uint16_t code_sel;
     uint8_t  reserved;
@@ -22,8 +23,8 @@ typedef struct {
     uint16_t high_base;
 }__attribute__((packed)) idt_desc;
 
-extern idt_desc* get_ir (uint32_t i);
-extern int install_ir (uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);
-extern int idt_init (uint16_t code_sel);
+extern idt_desc* get_ir(uint32_t i);
+extern int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);
+extern int idt_init(uint16_t code_sel);
 
 #endif

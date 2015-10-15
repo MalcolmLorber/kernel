@@ -5,7 +5,7 @@ uint8_t pic_read(uint16_t pic)
 {
     if(pic>1)
     {
-	return;
+	return 0;
     }
     uint16_t reg = (pic==0)? PIC1_REG_DATA:PIC2_REG_DATA;
     return inb(reg);

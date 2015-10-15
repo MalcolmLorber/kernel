@@ -1,6 +1,7 @@
 #include "pit.h"
 #include "pic.h"
 #include "idt.h"
+#include "asm.h"
 
 static volatile uint32_t _pit_ticks = 0;
 static bool _pit_is_init = false;

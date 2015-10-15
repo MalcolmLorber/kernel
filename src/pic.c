@@ -1,6 +1,9 @@
 #include "pic.h"
 #include "asm.h"
 
+#pragma GCC push_options
+#pragma GCC optimize ("0")
+
 uint8_t pic_read(uint16_t pic)
 {
     if(pic>1)
@@ -59,3 +62,4 @@ void pic_init(uint8_t base0, uint8_t base1)
     pic_write(0, icw);
     pic_write(1, icw);
 }
+#pragma GCC pop_options

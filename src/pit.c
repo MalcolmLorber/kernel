@@ -3,6 +3,9 @@
 #include "idt.h"
 #include "asm.h"
 
+#pragma GCC push_options
+#pragma GCC optimize ("0")
+
 static volatile uint32_t _pit_ticks = 0;
 static bool _pit_is_init = false;
 
@@ -76,3 +79,4 @@ bool pit_is_init()
 {
     return _pit_is_init;
 }
+#pragma GCC pop_options

@@ -35,7 +35,7 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
          * yet, '\n' will produce some VGA specific character instead.
          * This is normal.
          */
-    
+
     serial_writestring("Hello, kernel World!\n");
     terminal_writestring("Hello, kernel World!\n");
 

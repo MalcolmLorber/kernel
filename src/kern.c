@@ -39,5 +39,8 @@ void kernel_main()
     serial_writestring("Finished Initilizing memory\n");
     asm ("int $0x80");
     asm ("int $0x90");
+    int o=0;
+    int j=5/o;
+    serial_hexword(j);
     asm ("hlt");
 }

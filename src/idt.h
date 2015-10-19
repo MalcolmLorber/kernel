@@ -47,6 +47,7 @@ struct stack_state
 extern void default_handler(struct reg_state reg,uint32_t interrupt, uint32_t error, struct stack_state stack); 
 extern idt_desc* get_ir(uint32_t i);
 extern int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);
+extern void install_c_ir(uint32_t interrupt, void (*handler) (uint32_t));
 extern int idt_init(uint16_t code_sel);
 extern void idt_ftoi(int a, IRQ_HANDLER irq);
 extern void idtsetup();

@@ -13,7 +13,7 @@ idt_desc _idt [MAX_IDT_INT];
 
 uint16_t _code_sel;
 
-void (*handlers[256]) (uint32_t interrupt, uint32_t error);
+void (*handlers[256]) (uint32_t error);
 
 void idt_install() 
 {
@@ -41,7 +41,7 @@ void default_handler(struct reg_state reg, uint32_t interrupt, uint32_t error, s
     serial_writestring("\n");
     if(handlers[interrupt]!=NULL)
     {
-	handlers[interrupt](interrupt, error);
+	handlers[interrupt](error);
     }
     return;
 }
@@ -72,6 +72,10 @@ int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER irq)
     _idt[i].flags     = (uint8_t)(flags);
     _idt[i].code_sel  = code_sel;
     return 0;
+}
+void install_c_ir(uint32_t interrupt, void (*handler) (uint32_t))
+{
+    handlers[interrupt]=handler;
 }
 
 void idt_ftoi(int a, IRQ_HANDLER irq)

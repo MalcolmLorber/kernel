@@ -46,6 +46,70 @@ void populate_page_table(page_table_entry* table, void* start, int num, int offs
     }
 }
 
+// TODO: put this as a label at the end of the code, so we can take
+// its address
+#define KERN_END 0x104000
+
+page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end)
+{
+
+    // Make a page directory structure easily
+    page_directory_entry* kern_page_dir = initiate_directory();
+
+    // This line will change with the above TODO
+    page_table_entry* next_table = (page_table_entry*) KERN_END;
+
+    int current_dir_entry = 0;
+
+    // For each entry in the memory map
+    while (mmap < mmap_end)
+    {
+        // Special case for the first memory segment - it gets its own directory entry
+        if (mmap->base_addr == 0)
+        {
+            // Lower memory should be first in the page directory and
+            // mapped one to one
+            populate_page_table(next_table, 0, 1024, 0);
+            page_directory[0] = (uint32_t) next_table;
+            page_directory[0] |= PAGE_WRITABLE | PAGE_PRESENT;
+
+            current_dir_entry = 1;
+            next_table += 0x1000;
+        }
+        else if (mmap->type == 1)
+        {
+            uint32_t i;
+            for (i = 0; i+0x1000000 < mmap->length; i += 0x1000000)
+            {
+                populate_page_table(next_table, (void*) mmap->base_addr + i, 1024 ,0);
+                page_directory[current_dir_entry] = (uint32_t) next_table;
+                page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
+
+                current_dir_entry += 1;
+                next_table += 0x1000;
+            }
+            // There will be an edge case where there is less than a
+            // full page table to be mapped. This handlis this case.
+            if (i != mmap->length)
+            {
+                populate_page_table(next_table, (void*) mmap->base_addr + i, (mmap->length - i) / 0x1000 ,0);
+                page_directory[current_dir_entry] = (uint32_t) next_table;
+                page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
+
+                current_dir_entry += 1;
+                next_table += 0x1000;
+            }
+
+        }
+        mmap = (multiboot_memory_map*)((uint32_t)mmap + mmap->size + sizeof(uint32_t));
+    }
+
+    // let the memory allocator work freely with all remaining memory
+    memory_mark = next_table;
+
+    return kern_page_dir;
+}
+
 page_directory_entry* initiate_directory()
 {
     // set each entry to not present

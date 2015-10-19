@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "multiboot.h"
+
 // Flags for pages directory entries and table entries
 #define PAGE_PRESENT        0x1
 #define PAGE_WRITABLE       0x2
@@ -28,5 +30,6 @@ extern void enablePaging();
 // Defined in the file mem.c
 page_directory_entry* initiate_directory();
 void initiate_page_table(page_directory_entry* page_dir);
+page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
 
 #endif

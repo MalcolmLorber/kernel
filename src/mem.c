@@ -132,24 +132,9 @@ page_directory_entry* initiate_directory()
     return page_directory;
 }
 
-void initiate_page_table(page_directory_entry* page_dir)
+void* malloc(uint32_t bytes)
 {
-    // holds the physical address where we want to start mapping these pages to.
-    // in this case, we want to map these pages to the very beginning of memory.
-    unsigned int i;
-
-    //we will fill all 1024 entries in the table, mapping 4 megabytes
-    for(i = 0; i < 1024; i++)
-    {
-        // As the address is page aligned, it will always leave 12 bits zeroed.
-        // Those bits are used by the attributes:
-        //    -> supervisor level, read/write, present.
-        page_table_one[i] = 0;
-        page_table_one[i] |= i << 12;
-        page_table_one[i] |= PAGE_WRITABLE | PAGE_PRESENT;
-    }
-
-    // attributes: supervisor level, read/write, present
-    page_dir[0] = (uint32_t) page_table_one;
-    page_dir[0] |= PAGE_WRITABLE | PAGE_PRESENT;
+    void* old_mark = memory_mark;
+    memory_mark = (void*)((uint32_t)memory_mark + bytes);
+    return old_mark;
 }

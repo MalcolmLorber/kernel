@@ -31,4 +31,11 @@ extern void enablePaging();
 page_directory_entry* initiate_directory();
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
 
+// memory mark stores a counter of bytes for the most recently used
+// memory. Everything before it is used and all valid memory after it
+// is free
+void* memory_mark;
+
+void* malloc(uint32_t bytes);
+
 #endif

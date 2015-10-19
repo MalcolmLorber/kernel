@@ -17,7 +17,7 @@
 #include "multiboot.h"
 
 // The parameters passed here ultimately come through the bootloader
-void kernel_main(multiboot_info* mbd, uint32_t magic)
+void kernel_main(multiboot_info* mbt, uint32_t magic)
 {
     /* Initialize terminal and serial interfaces */
     terminal_initialize();
@@ -31,12 +31,13 @@ void kernel_main(multiboot_info* mbd, uint32_t magic)
          */
     serial_writestring("IDT initialized\n");
     terminal_writestring("Hello, kernel World!\n");
-    //serial_writestring("Second Serial Test\n");
 
-    serial_hexstring(&magic, 4);
-    serial_writestring("\n");
-    serial_hexstring(&(mbd->flags), 8);
-    serial_writestring("\n");
+    // Abort if magic is not correct.
+    if (magic != 0x2badb002)
+    {
+        serial_writestring("Magic number not correct\n");
+        // wait how do we terminate
+    }
 
     // Enable paging of memory. For now there is only one virtual
     // memory space defined by page_dir

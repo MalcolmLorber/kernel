@@ -13,7 +13,40 @@ page_directory_entry page_directory[1024] __attribute__((aligned(4096)));
 // only page table in the page directory
 page_table_entry page_table_one[1024] __attribute__((aligned(4096)));
 
-page_directory_entry* initiate_directory() 
+// populate_page_table makes a page table at `table` mapping `num`
+// pages to bytes after `start + offset*4KB`
+// both table and start must be properly aligned
+void populate_page_table(page_table_entry* table, void* start, int num, int offset)
+{
+    // Check that there are the correct number of entries
+    if ((offset + num) > 1024)
+    {
+        serial_writestring("tred to populate past the end of the page table\n");
+    }
+
+    // Check that the table is properly aligned
+    if (((uint32_t)table & 0xfff) != 0)
+    {
+        serial_writestring("tried to populate a table that was not page aligned");
+    }
+
+    // Check that the table is properly aligned
+    if (((uint32_t)start & 0xfff) != 0)
+    {
+        serial_writestring("tried to start mapping on an unaligned address");
+    }
+
+    int i;
+    int stop = num + offset;
+    for (i = offset; i < stop; i++)
+    {
+        table[i] = 0;
+        table[i] |= (uint32_t)start + (i<<12);
+        table[i] |= PAGE_WRITABLE | PAGE_PRESENT;
+    }
+}
+
+page_directory_entry* initiate_directory()
 {
     // set each entry to not present
     int i;
@@ -35,7 +68,7 @@ page_directory_entry* initiate_directory()
     return page_directory;
 }
 
-void initiate_page_table(page_directory_entry* page_dir) 
+void initiate_page_table(page_directory_entry* page_dir)
 {
     // holds the physical address where we want to start mapping these pages to.
     // in this case, we want to map these pages to the very beginning of memory.

@@ -41,10 +41,9 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
 
     // Enable paging of memory. For now there is only one virtual
     // memory space defined by page_dir
-    page_directory_entry* page_dir;
-    page_dir = initiate_directory();
-    initiate_page_table(page_dir);
-    loadPageDirectory(page_dir);
+    page_directory_entry* kern_page_dir;
+    kern_page_dir = mem_init_kern_tables(mbt->mmap_addr, mbt->mmap_addr + mbt->mmap_length);
+    loadPageDirectory(kern_page_dir);
     enablePaging();
 
     serial_writestring("Finished Initilizing memory\n");

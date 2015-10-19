@@ -18,10 +18,6 @@ void test_mem()
     for(i=0; i < 0x4000; i++)
     {
         *(int*)(i<<2) = i;
-        serial_writestring("wrote 0x");
-        serial_hexstring(&i, 4);
-        serial_writestring("\n");
-
     }
 
     // read it back in and make sure its all stored

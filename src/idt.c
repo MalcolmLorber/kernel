@@ -27,6 +27,8 @@ void idt_install()
 
 void default_handler(struct reg_state reg, uint32_t interrupt, uint32_t error, struct stack_state stack) 
 {
+    if(interrupt<32)
+	stack.eip+=2;
     serial_writestring("int caught ");
     char f[20];
     serial_val(interrupt);

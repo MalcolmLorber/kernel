@@ -13,6 +13,8 @@ idt_desc _idt [MAX_IDT_INT];
 
 uint16_t _code_sel;
 
+void (*handlers[256]) (uint32_t interrupt, uint32_t error);
+
 void idt_install() 
 {
     struct
@@ -37,6 +39,10 @@ void default_handler(struct reg_state reg, uint32_t interrupt, uint32_t error, s
     serial_val(stack.cd);
     serial_val(stack.eflags);
     serial_writestring("\n");
+    if(handlers[interrupt]!=NULL)
+    {
+	handlers[interrupt](interrupt, error);
+    }
     return;
 }
 
@@ -78,10 +84,11 @@ int idt_init(uint16_t code_sel)
     idt_limit = sizeof(idt_desc) * MAX_IDT_INT -1;
     idt_base  = (uint32_t)&_idt[0];
     memset ((void*)&_idt[0], 0, sizeof (idt_desc) * MAX_IDT_INT-1);
-    //for (int i=0; i<MAX_IDT_INT; i++)
-    //{
+    for (int i=0; i<MAX_IDT_INT; i++)
+    {
     //	install_ir (i, IDT_PR|IDT_32, code_sel, (IRQ_HANDLER)default_handler);
-    //}
+	handlers[i]=NULL;
+    }
     _code_sel = code_sel;
     idtsetup();
     idt_install();

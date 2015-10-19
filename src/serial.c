@@ -47,6 +47,14 @@ void serial_hexword(uint32_t x)
     }
 }
 
+void serial_hexqword(uint64_t x)
+{
+    for (int i = 15; i >= 0; i--)
+    {
+        serial_writechar(hexchars[x>>i*4&0xf]);
+    }
+}
+
 void serial_hexstring(void* s, uint32_t n) {
     char* d = (char*)s;
     for (uint32_t i = 0; i < n; i++)

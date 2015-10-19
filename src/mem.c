@@ -152,5 +152,4 @@ void initiate_page_table(page_directory_entry* page_dir)
     // attributes: supervisor level, read/write, present
     page_dir[0] = (uint32_t) page_table_one;
     page_dir[0] |= PAGE_WRITABLE | PAGE_PRESENT;
-
 }

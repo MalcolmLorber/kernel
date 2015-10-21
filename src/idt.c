@@ -1,6 +1,7 @@
 #include "idt.h"
 #include "string.h"
 #include "serial.h"
+#include "exceptions.h"
 
 #pragma GCC push_options
 #pragma GCC optimize ("0")
@@ -25,6 +26,21 @@ void idt_install()
     idtr.limit = idt_limit;
     idtr.base = idt_base;
     asm volatile ("lidt (%0)": :"r"(&idtr));
+}
+
+void load_error_handlers()
+{
+    void(*errors[])(uint32_t)={int_div_by_zero,int_debug,int_non_maskable_interrupt,int_breakpoint,int_overflow,
+			     int_bound_range_exceeded,int_invalid_opcode,int_device_not_available,int_double_fault,
+			     int_coprocessor_segment_overrun,int_invalid_tss,int_segment_not_present,
+			     int_stack_segment_fault,int_general_protection_fault,int_page_fault,int_reserved,
+			     int_x87_floating_point,int_alignment_check,int_machine_check,int_simd_floating_point,
+			     int_virtualization,int_reserved,int_reserved,int_reserved,int_reserved,int_reserved,
+			     int_reserved,int_reserved,int_reserved,int_reserved,int_security,int_reserved};
+    for(int i=0;i<32;i++)
+    {
+	handlers[i]=errors[i];
+    }
 }
 
 void default_handler(struct reg_state reg, uint32_t interrupt, uint32_t error, struct stack_state stack) 
@@ -96,6 +112,7 @@ int idt_init(uint16_t code_sel)
     _code_sel = code_sel;
     idtsetup();
     idt_install();
+    load_error_handlers();
     return 0;
 }
 #pragma GCC pop_options

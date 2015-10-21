@@ -85,7 +85,7 @@ void int_virtualization(uint32_t __attribute__((unused))error)
 {
     serial_writestring("VITUALIZATION ERROR");
 }
-void int_securiy(uint32_t __attribute__((unused))error)
+void int_security(uint32_t __attribute__((unused))error)
 {
     serial_writestring("SECURITY ERROR");
 }

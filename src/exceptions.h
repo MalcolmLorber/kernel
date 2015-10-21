@@ -24,6 +24,6 @@ void int_alignment_check(uint32_t error);
 void int_machine_check(uint32_t error);
 void int_simd_floating_point(uint32_t error);
 void int_virtualization(uint32_t error);
-void int_securiy(uint32_t error);
+void int_security(uint32_t error);
 
 #endif

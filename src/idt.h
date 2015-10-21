@@ -23,8 +23,32 @@ typedef struct
     uint16_t high_base;
 }__attribute__((packed)) idt_desc;
 
+
+struct reg_state
+{
+    uint32_t eax;
+    uint32_t ecx;
+    uint32_t edx;
+    uint32_t ebx;
+    uint32_t esp;
+    uint32_t ebp;
+    uint32_t esi;
+    uint32_t edi;
+}__attribute__((packed));
+
+struct stack_state
+{
+    uint32_t eip;
+    uint32_t cd;
+    uint32_t eflags;
+}__attribute__((packed));
+
+
+extern void default_handler(struct reg_state reg,uint32_t interrupt, uint32_t error, struct stack_state stack); 
 extern idt_desc* get_ir(uint32_t i);
 extern int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);
+extern void install_c_ir(uint32_t interrupt, void (*handler) (uint32_t));
 extern int idt_init(uint16_t code_sel);
-
+extern void idt_ftoi(int a, IRQ_HANDLER irq);
+extern void idtsetup();
 #endif

@@ -1,14 +1,20 @@
 #include "idt.h"
 #include "string.h"
 #include "serial.h"
+#include "exceptions.h"
 
 #pragma GCC push_options
 #pragma GCC optimize ("0")
 
+#define serial_val(i) itoa(i,f);serial_writestring(f);serial_writestring(" ");
 uint16_t idt_limit;
 uint32_t idt_base;
 
 idt_desc _idt [MAX_IDT_INT];
+
+uint16_t _code_sel;
+
+void (*handlers[256]) (uint32_t error);
 
 void idt_install() 
 {
@@ -22,10 +28,37 @@ void idt_install()
     asm volatile ("lidt (%0)": :"r"(&idtr));
 }
 
-static void default_handler() 
+void load_error_handlers()
 {
-    //DEBUG OUTPUT MAYBE?
-    serial_writestring("int caught\n");
+    void(*errors[])(uint32_t)={int_div_by_zero,int_debug,int_non_maskable_interrupt,int_breakpoint,int_overflow,
+			     int_bound_range_exceeded,int_invalid_opcode,int_device_not_available,int_double_fault,
+			     int_coprocessor_segment_overrun,int_invalid_tss,int_segment_not_present,
+			     int_stack_segment_fault,int_general_protection_fault,int_page_fault,int_reserved,
+			     int_x87_floating_point,int_alignment_check,int_machine_check,int_simd_floating_point,
+			     int_virtualization,int_reserved,int_reserved,int_reserved,int_reserved,int_reserved,
+			     int_reserved,int_reserved,int_reserved,int_reserved,int_security,int_reserved};
+    for(int i=0;i<32;i++)
+    {
+	handlers[i]=errors[i];
+    }
+}
+
+void default_handler(struct reg_state reg, uint32_t interrupt, uint32_t error, struct stack_state stack) 
+{
+    if(interrupt<32)
+	stack.eip+=2;
+    serial_writestring("int caught ");
+    char f[20];
+    serial_val(interrupt);
+    serial_val(error);
+    serial_val(stack.eip);
+    serial_val(stack.cd);
+    serial_val(stack.eflags);
+    serial_writestring("\n");
+    if(handlers[interrupt]!=NULL)
+    {
+	handlers[interrupt](error);
+    }
     return;
 }
 
@@ -56,6 +89,15 @@ int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER irq)
     _idt[i].code_sel  = code_sel;
     return 0;
 }
+void install_c_ir(uint32_t interrupt, void (*handler) (uint32_t))
+{
+    handlers[interrupt]=handler;
+}
+
+void idt_ftoi(int a, IRQ_HANDLER irq)
+{
+    install_ir(a, IDT_PR|IDT_32, _code_sel, irq);
+}
 
 int idt_init(uint16_t code_sel) 
 {
@@ -64,9 +106,13 @@ int idt_init(uint16_t code_sel)
     memset ((void*)&_idt[0], 0, sizeof (idt_desc) * MAX_IDT_INT-1);
     for (int i=0; i<MAX_IDT_INT; i++)
     {
-	    install_ir (i, IDT_PR|IDT_32, code_sel, (IRQ_HANDLER)default_handler);
+    //	install_ir (i, IDT_PR|IDT_32, code_sel, (IRQ_HANDLER)default_handler);
+	handlers[i]=NULL;
     }
+    _code_sel = code_sel;
+    idtsetup();
     idt_install();
+    load_error_handlers();
     return 0;
 }
 #pragma GCC pop_options

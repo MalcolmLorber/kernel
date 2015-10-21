@@ -7,6 +7,18 @@ void *memset(void *s, int c, size_t n){
     return s;
 }
 
+void reverse ( char s[] )
+{
+    int c, i, j;
+    
+    for (i=0, j= strlen(s)-1;i<j;i++,j--)
+    {
+	c = s[i];
+	s[i] = s[j];
+	s[j] = c;
+    }
+}
+
 void itoa(int n, char s[])
 {
      int i, sign;
@@ -25,8 +37,9 @@ void itoa(int n, char s[])
          s[i++] = '-';
      }
      s[i] = '\0';
-     //reverse(s);
+     reverse(s);
 }
+
 
 size_t strlen(const char* str) 
 {

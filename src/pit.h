@@ -2,6 +2,7 @@
 #define _PIT_INC
 
 #include <stdint.h>
+#include <stdbool.h>
 
 //OCW masks
 #define PIT_OCW_BINC 0x01
@@ -33,10 +34,6 @@
 #define PIT_REG_CONT_1 0x41
 #define PIT_REG_CONT_2 0x42
 #define PIT_REG_COMD 0x43
-
-#define true 1
-#define false 0
-#define bool uint8_t
 
 void pit_command(uint8_t cmd);
 void pit_write(uint16_t data, uint8_t counter);

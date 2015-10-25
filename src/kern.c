@@ -1,4 +1,9 @@
-#include <stdbool.h> /* C doesn't have booleans by default. */
+/*
+  kern.c is where the c code starts, as invoked by our heading
+  assembly. It should only contain high level code
+*/
+
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -8,11 +13,11 @@
 #include "mem.h"
 #include "gdt.h"
 #include "idt.h"
+#include "test.h"
+#include "multiboot.h"
 
-#if defined(__cplusplus)
-extern "C" /* Use C linkage for kernel_main. */
-#endif
-void kernel_main() 
+// The parameters passed here ultimately come through the bootloader
+void kernel_main(multiboot_info* mbt, uint32_t magic)
 {
     /* Initialize terminal and serial interfaces */
     terminal_initialize();
@@ -26,21 +31,25 @@ void kernel_main()
          */
     serial_writestring("IDT initialized\n");
     terminal_writestring("Hello, kernel World!\n");
-    //serial_writestring("Second Serial Test\n");
+
+    // Abort if magic is not correct.
+    if (magic != 0x2badb002)
+    {
+        serial_writestring("Magic number not correct\n");
+        // wait how do we terminate
+    }
 
     // Enable paging of memory. For now there is only one virtual
     // memory space defined by page_dir
-    page_directory_entry* page_dir;
-    page_dir = initiate_directory();
-    initiate_page_table(page_dir);
-    loadPageDirectory(page_dir);
+    page_directory_entry* kern_page_dir;
+    kern_page_dir = mem_init_kern_tables(mbt->mmap_addr, mbt->mmap_addr + mbt->mmap_length);
+    loadPageDirectory(kern_page_dir);
     enablePaging();
 
     serial_writestring("Finished Initilizing memory\n");
-    asm ("int $0x80");
-    asm ("int $0x90");
     int o=0;
     int j=5/o;
     serial_hexword(j);
-    asm ("hlt");
+    test_mem();
+    test_idt();
 }

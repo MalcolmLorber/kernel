@@ -6,7 +6,7 @@
 
 #define SERIAL_IO_PORT 0x3f8 // COM1
 
-void serial_init() 
+void serial_init()
 {
     outb(SERIAL_IO_PORT + 1, 0x00);    // Disable all interrupts
     outb(SERIAL_IO_PORT + 3, 0x80);    // Enable DLAB (set baud rate divisor)
@@ -17,21 +17,21 @@ void serial_init()
     outb(SERIAL_IO_PORT + 4, 0x0B);    // IRQs enabled, RTS/DSR set
 }
 
-int is_transmit_empty() 
+int is_transmit_empty()
 {
     return inb(SERIAL_IO_PORT + 5) & 0x20;
 }
 
-void serial_writechar(char a) 
+void serial_writechar(char a)
 {
     while (is_transmit_empty() == 0);
 
     outb(SERIAL_IO_PORT,a);
 }
 
-void serial_writestring(char* s) 
+void serial_writestring(char* s)
 {
-    while (*s) 
+    while (*s)
     {
         serial_writechar(*s);
         s++;
@@ -39,9 +39,17 @@ void serial_writestring(char* s)
 }
 
 const char* hexchars = "0123456789abcdef";
-void serial_hexword(uint32_t x) 
+void serial_hexword(uint32_t x)
 {
-    for (int i = 8; i != 0; i--) 
+    for (int i = 7; i >= 0; i--)
+    {
+        serial_writechar(hexchars[x>>i*4&0xf]);
+    }
+}
+
+void serial_hexqword(uint64_t x)
+{
+    for (int i = 15; i >= 0; i--)
     {
         serial_writechar(hexchars[x>>i*4&0xf]);
     }
@@ -49,7 +57,7 @@ void serial_hexword(uint32_t x)
 
 void serial_hexstring(void* s, uint32_t n) {
     char* d = (char*)s;
-    for (uint32_t i = 0; i < n; i++) 
+    for (uint32_t i = 0; i < n; i++)
     {
         serial_writechar(hexchars[(d[i]>>4)&0xf]);
         serial_writechar(hexchars[d[i]&0xf]);

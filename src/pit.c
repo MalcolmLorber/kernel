@@ -2,6 +2,7 @@
 #include "pic.h"
 #include "idt.h"
 #include "asm.h"
+#include "serial.h"
 
 #pragma GCC push_options
 #pragma GCC optimize ("0")
@@ -11,10 +12,12 @@ static bool _pit_is_init = false;
 
 void pit_irq()
 {
-    asm volatile ("add %esp, 12; pusha");
+    //asm volatile ("pusha");
     _pit_ticks++;
+    //serial_writestring("PIT tick\n");
     pic_command(0, PIC_OCW2_EOI);
-    asm volatile("popa; iret");
+    //serial_writestring("PIT tickn\n");
+    //asm volatile("nop;nop;nop;popa; iret;");
 }
 
 void pit_command(uint8_t cmd)
@@ -71,7 +74,8 @@ void pit_start_counter(uint32_t freq, uint8_t counter, uint8_t mode)
 
 void pit_init()
 {
-    install_ir(32, IDT_PR|IDT_32, 0x8, pit_irq);
+    //install_ir(32, IDT_PR|IDT_32, 0x8, pit_irq);
+    install_c_ir(32, pit_irq);
     _pit_is_init = true;
 }
 

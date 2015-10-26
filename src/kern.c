@@ -57,14 +57,11 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     serial_writestring("Finished Initilizing memory\n");
     int o=0;
     int j=5/o;
-    serial_hexword(j);
-<<<<<<< HEAD
+    serial_hexword(j);    
     test_mem();
     test_idt();
-=======
-    serial_writestring("\n");
     while(true)
-	serial_writestring("");
-    asm ("hlt");
->>>>>>> Unified SW/HW interrupts, HW works now
+    {
+	asm("hlt");
+    }
 }

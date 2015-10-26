@@ -2,7 +2,6 @@
 #include "pic.h"
 #include "serial.h"
 #include "idt.h"
-#include "string.h"
 
 void kbd_irq()
 {

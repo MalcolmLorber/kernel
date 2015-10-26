@@ -57,11 +57,8 @@ void default_handler(struct reg_state reg, uint32_t interrupt, uint32_t error, s
     serial_writestring("int caught ");
     char f[20];
     serial_val(interrupt);
-    serial_val(error);
-    serial_val(stack.eip);
-    //serial_hexword(error);serial_writestring(" ");
-    //serial_hexword(stack.eip);serial_writestring(" ");
-    //serial_val(stack.eip);
+    serial_hexword(error);serial_writestring(" ");
+    serial_hexword(stack.eip);serial_writestring(" ");
     serial_val(stack.cd);
     serial_val(stack.eflags);
     serial_writestring("\n");

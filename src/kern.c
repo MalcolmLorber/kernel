@@ -14,6 +14,7 @@
 #include "gdt.h"
 #include "idt.h"
 #include "test.h"
+#include "pci.h"
 #include "multiboot.h"
 #include "pic.h"
 #include "pit.h"
@@ -62,6 +63,10 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     int j=5/o;
     serial_hexword(j);    
     test_mem();
+
+    // PCI
+    checkAllBuses();
+
     test_idt();
     while(true)
     {

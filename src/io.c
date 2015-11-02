@@ -11,8 +11,16 @@ void kbd_irq()
 {
     int a = inb(0x60);
     serial_hexword(a);
-    if(a<0x80)
-	terminal_putchar(scan_map[a]);
+    if(a==0x4b)
+	terminal_adjustcursor(-1,0);
+    else if(a==0x4d)
+	terminal_adjustcursor(1,0);
+    else if(a==0x48)
+	terminal_adjustcursor(0,-1);
+    else if(a==0x50)
+	terminal_adjustcursor(0,1);
+    else if(a<0x80)
+	terminal_putchar(scan_map[a]);  
     //else
     //terminal_putchar(scan_map[a-0x80]);
     serial_writestring("\n");

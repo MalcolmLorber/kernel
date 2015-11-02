@@ -21,6 +21,8 @@ void serial_writechar(char a);
 void serial_writestring(char* s);
 
 // Function to write a 4 byte word toserial in hex
+void serial_hexbyte(uint8_t x);
+void serial_hexhword(uint16_t x);
 void serial_hexword(uint32_t x);
 void serial_hexqword(uint64_t x);
 void serial_hexstring(void* s, uint32_t n);

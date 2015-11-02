@@ -107,3 +107,18 @@ void terminal_writestring(const char* data)
 	terminal_putchar(data[i]);
     }
 }
+void terminal_movecursor(size_t x, size_t y)
+{
+    if(x>=VGA_WIDTH || y>= VGA_HEIGHT) return;
+    terminal_column=x;
+    terminal_row=y;
+    update_csr();
+}
+void terminal_adjustcursor(int x, int y)
+{
+    terminal_column+=x;
+    terminal_row+=y;
+    if(terminal_column>VGA_WIDTH) terminal_column=VGA_WIDTH;
+    if(terminal_row>VGA_HEIGHT) terminal_row=VGA_HEIGHT;
+    update_csr();
+}

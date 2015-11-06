@@ -35,12 +35,12 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     io_init();
     pit_start_counter(100, PIT_OCW_CONT_0, PIT_OCW_MODE_SQWVGEN);
     enable_int();
-    
+
 	/* Since there is no support for newlines in terminal_putchar
          * yet, '\n' will produce some VGA specific character instead.
          * This is normal.
          */
-    
+
     serial_writestring("Hello, kernel World!\n");
     terminal_writestring("Hello, kernel World!\n");
 
@@ -61,8 +61,9 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     serial_writestring("Finished Initilizing memory\n");
     int o=0;
     int j=5/o;
-    serial_hexword(j);    
-    test_mem();
+    serial_hexword(j);
+    //test_mem();
+    serial_writechar('\n');
 
     // PCI
     checkAllBuses();

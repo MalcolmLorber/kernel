@@ -8,7 +8,6 @@ void test_idt()
 {
     asm ("int $0x80");
     asm ("int $0x90");
-    asm ("hlt");
 }
 
 void test_mem()

@@ -42,48 +42,6 @@ uint32_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offs
     return data;
 }
 
-// Check function also prints out stuff
-void checkFunction(uint8_t bus, uint8_t device, uint8_t function) {
-    uint16_t class;
-
-    class = pciConfigReadWord(bus, device, function, 0x08);
-
-    // Print out information about the device
-    serial_writestring("0x");
-    serial_hexhword(class);
-
-}
-
-void checkDevice(uint8_t bus, uint8_t device)
-{
-    uint8_t function = 0;
-
-    uint16_t vendorID = pciConfigReadWord(bus, device, function, 2);
-    if (vendorID == 0xFFFF)
-    {
-        return;
-    }
-
-    checkFunction(bus, device, function);
-    uint8_t headerType = (pciConfigReadWord(bus, device, function, 0x0C) & 0xff00) >> 8;
-    /* serial_writestring("Header type: "); */
-    /* serial_hexhword(pciConfigReadWord(bus, device, function, 0x0C)); */
-    /* serial_writestring("\n"); */
-    if( (headerType & 0x80) != 0)
-    {
-        // It is a multi-function device, so check remaining functions
-        for(function = 0; function < 8; function++)
-        {
-            serial_writestring("found a function\n");
-            if(pciConfigReadWord(bus, device, function, 0) != 0x0000FFFF)
-            {
-                checkFunction(bus, device, function);
-            }
-        }
-    }
-}
-
-
 void checkAllBuses(void)
 {
     serial_writestring("Enumerating PCI busses\n");

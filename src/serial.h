@@ -25,6 +25,8 @@ void serial_hexbyte(uint8_t x);
 void serial_hexhword(uint16_t x);
 void serial_hexword(uint32_t x);
 void serial_hexqword(uint64_t x);
+
+// Writes an arbitrary amount memory to serial
 void serial_hexstring(void* s, uint32_t n);
 
 #endif

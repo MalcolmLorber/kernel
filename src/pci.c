@@ -6,12 +6,12 @@
 #include "pci.h"
 #include "serial.h"
 
-void pciSerialInfo(bus, device, function, offset)
+void pciSerialInfo(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset)
 {
     uint32_t address;
     uint32_t lbus  = (uint32_t)bus;
-    uint32_t lslot = (uint32_t)slot;
-    uint32_t lfunc = (uint32_t)func;
+    uint32_t lslot = (uint32_t)device;
+    uint32_t lfunc = (uint32_t)function;
     address = (uint32_t)((lbus << 16) |
                          (lslot << 11) |
                          (lfunc << 8) |
@@ -28,24 +28,24 @@ void pciSerialInfo(bus, device, function, offset)
     serial_writestring(" on bus ");
     serial_hexbyte(bus);
     serial_writestring(" device ");
-    serial_hexbyte(slot);
+    serial_hexbyte(device);
     serial_writestring(" function ");
-    serial_hexbyte(func);
+    serial_hexbyte(function);
     serial_writestring(" with offset ");
     serial_hexbyte(offset);
     serial_writechar('\n');
 }
 
 // reads a word from the io port using the pci addressing scheme
-uint32_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset)
+uint32_t pciConfigReadWord(uint8_t bus, uint8_t device, uint8_t func, uint8_t offset)
 {
     uint32_t address;
     uint32_t lbus  = (uint32_t)bus;
-    uint32_t lslot = (uint32_t)slot;
+    uint32_t ldev = (uint32_t)device;
     uint32_t lfunc = (uint32_t)func;
 
     address = (uint32_t)((lbus << 16) |
-                         (lslot << 11) |
+                         (ldev << 11) |
                          (lfunc << 8) |
                          (offset & 0xfc) |
                          ((uint32_t)0x80000000));
@@ -63,16 +63,17 @@ void checkAllBuses(void)
     uint8_t device;
     uint8_t function;
 
-    for(bus = 0; bus < 255; bus++)
+    for (bus = 0; bus < 255; bus++)
     {
-        for(device = 0; device < 32; device++)
+        for (device = 0; device < 32; device++)
         {
             for (function = 0; function < 8; function++)
             {
                 if (pciConfigReadWord(bus, device, function, 0) != 0xffffffff)
                 {
+                    pciSerialInfo(bus, device, function, 0);
                     serial_writestring("- - - - - - - - - - - - - - - - - - - -\n");
-                    pciConfigReadWord(bus, device, function, 8);
+                    pciSerialInfo(bus, device, function, 8);
                     serial_writestring("=======================================\n");
                 }
             }

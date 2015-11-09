@@ -4,14 +4,20 @@
 #include "idt.h"
 #include "string.h"
 #include "term.h"
+#include "comp.h"
 
 char scan_map[256] = {' ','E','1','2','3','4','5','6','7','8','9','0','-','=','\b','\t','q','w','e','r','t','y','u','i','o','p',
 		      '[',']','\n','^','a','s','d','f','g','h','j','k','l',';','\'','`','S','\\','z','x','c','v','b','n','m',
 		      ',','.','/','S','O','A',' ','C','F','F','F','F','F','F','F','F','F','F','L','L',};
 char kb_buf[256];
 int kb_buf_size;
-int cstack[128];
-int cstack_size;
+
+void terminal_writeint(int n)
+{
+    char f[20];
+    itoa(n,f);
+    terminal_writestring(f);
+}
 
 void io_process(char* s)
 {
@@ -35,22 +41,42 @@ void io_process(char* s)
     else if(strncmp(s,"push ",5)==0)
     {
 	int n = stoi(s+5);
-	cstack[cstack_size]=n;
-	cstack_size++;
-	//terminal_writestring("pushed\n");
+        cpush(n);
+    }
+    else if(strncmp(s,"peek",4)==0)
+    {
+	terminal_writeint(cpeek());
+	terminal_putchar('\n');
     }
     else if(strncmp(s,"pop",3)==0)
     {
-	if(cstack_size==0)
-	{
-	    terminal_writestring("stack empty\n");
-	}
-	else
-	{
-	    terminal_putchar(cstack[cstack_size-1]+48);
-	    cstack_size--;
-	    terminal_putchar('\n');
-	}
+	terminal_writeint(cpeek());
+        cpop();
+	terminal_putchar('\n');
+    }
+    else if(strncmp(s,"add",3)==0)
+    {
+	cadd();
+	terminal_writeint(cpeek());
+	terminal_putchar('\n');
+    }
+    else if(strncmp(s,"mult",3)==0)
+    {
+	cmult();
+	terminal_writeint(cpeek());
+	terminal_putchar('\n');
+    }
+    else if(strncmp(s,"sub",3)==0)
+    {
+	csub();
+	terminal_writeint(cpeek());
+	terminal_putchar('\n');
+    }
+    else if(strncmp(s,"div",3)==0)
+    {
+	cdiv();
+	terminal_writeint(cpeek());
+	terminal_putchar('\n');
     }
 }
 

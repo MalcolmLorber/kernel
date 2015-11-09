@@ -132,6 +132,13 @@ page_directory_entry* initiate_directory()
     return page_directory;
 }
 
+// Expect addr to be page aligned
+void map_directory_entry(void* addr, page_directory_entry* page_dir) {
+    page_table_entry* new_page_table = (page_table_entry*) (malloc(2048)+1024)&0xfffffc00;
+    populate_page_table(new_page_table, addr & 0xffc00000, 1024, 0);
+    page_dir[addr >> 22] = new_page_table;
+}
+
 void* malloc(uint32_t bytes)
 {
     void* old_mark = memory_mark;

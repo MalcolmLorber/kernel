@@ -31,6 +31,9 @@ extern void enablePaging();
 page_directory_entry* initiate_directory();
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
 
+// map_directory_entry maps the real address given to a page directory at the same memory
+void map_directory_entry(void*);
+
 // memory mark stores a counter of bytes for the most recently used
 // memory. Everything before it is used and all valid memory after it
 // is free

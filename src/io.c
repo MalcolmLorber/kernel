@@ -19,7 +19,7 @@ void terminal_writeint(int n)
     terminal_writestring(f);
 }
 
-void io_process(char* s)
+void io_process(char* s, int ss)
 {
     terminal_putchar('\n');
     if(strncmp(s,"echo ",5)==0)
@@ -35,7 +35,7 @@ void io_process(char* s)
     }
     else if(strncmp(s,"hex ",4)==0)
     {
-	terminal_hexstring(s+4,16);
+	terminal_hexstring(s+4,ss-4);
 	terminal_putchar('\n');
     }
     else if(strncmp(s,"push ",5)==0)
@@ -97,12 +97,13 @@ void kbd_irq()
 	char in = scan_map[a];
 	if(in == '\n')//enter pressed
 	{
-	    io_process(kb_buf);
+	    io_process(kb_buf, kb_buf_size);
 	    for(int i=0;i<kb_buf_size;i++)
 	    {
 		kb_buf[i]='\0';
 	    }
 	    kb_buf_size=0;
+	    terminal_writestring("> ");
 	}
 	else if(in=='\b')
 	{

@@ -99,6 +99,17 @@ void terminal_putchar(char c)
     update_csr();
 }
 
+const char* hexcharss = "0123456789abcdef";
+void terminal_hexstring(void* s, uint32_t n) {
+    char* d = (char*)s;
+    for (uint32_t i = 0; i < n; i++)
+    {
+        terminal_putchar(hexcharss[(d[i]>>4)&0xf]);
+        terminal_putchar(hexcharss[d[i]&0xf]);
+    }
+}
+
+
 void terminal_writestring(const char* data) 
 {
     size_t datalen = strlen(data);

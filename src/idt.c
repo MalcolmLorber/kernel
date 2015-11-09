@@ -45,28 +45,14 @@ void load_error_handlers()
 
 void default_handler(struct reg_state reg, uint32_t interrupt, uint32_t error, struct stack_state stack) 
 {
-    /*for(uint32_t i=stack.eip-16;i<=stack.eip+16;i+=4)
-    {
-	serial_hexword(i);
-	serial_writestring(": ");
-	serial_hexword(*((uint32_t*)(void*)i));
-	serial_writestring("\n");
-	}*/
     if(interrupt<32)
 	stack.eip+=2;
-    //serial_writestring("int caught ");
     //char f[20];
     //serial_val(interrupt);
-    //serial_hexword(error);serial_writestring(" ");
-    //serial_hexword(stack.eip);serial_writestring(" ");
-    //serial_val(stack.cd);
-    //serial_val(stack.eflags);
-    //serial_writestring("\n");
     if(handlers[interrupt]!=NULL)
     {
 	handlers[interrupt](error);
     }
-    //asm("hlt");
     return;
 }
 

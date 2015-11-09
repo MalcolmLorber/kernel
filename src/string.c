@@ -86,7 +86,7 @@ bool isNumericChar(char x)
 
 int stoi(char *str)
 {
-    if (*str == NULL)
+    if ((*str) == 0)
        return 0;
  
     int res = 0;

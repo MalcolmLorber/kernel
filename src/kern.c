@@ -67,10 +67,12 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
 
     // PCI
     checkAllBuses();
+    void* ahciAddr = pciFindAHCI();
+    serial_hexstring(ahciAddr, 0x1100);
 
     test_idt();
     while(true)
     {
-	asm("hlt");
+        asm("hlt");
     }
 }

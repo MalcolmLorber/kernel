@@ -16,5 +16,6 @@ uint32_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offs
 
 void checkAllBuses();
 
+void* pciFindAHCI();
 
 #endif

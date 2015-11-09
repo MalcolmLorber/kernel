@@ -80,3 +80,50 @@ void checkAllBuses(void)
         }
     }
 }
+
+// pciFindAHCI enumerates the pci bus to find the AHCI controller
+void* pciFindAHCI()
+{
+    uint8_t bus;
+    uint8_t device;
+    uint8_t function;
+    void* baseAddr = 0;
+
+    for (bus = 0; bus < 255; bus++)
+    {
+        for (device = 0; device <32; device++)
+        {
+            for (function = 0; function < 8; function++)
+            {
+                uint16_t classID = pciConfigReadWord(bus, device, function, 8) >> 16;
+                if (classID != 0xffff)
+                {
+                    serial_hexhword(classID);
+                    serial_writechar('\n');
+                }
+                // This class ID is for any
+                if (classID == 0x0106)
+                {
+                    if (baseAddr != 0)
+                    {
+                        serial_writestring("Found too many SATA devices!\n");
+                        return baseAddr;
+                    }
+                    serial_writestring("Found AHCI address\n");
+                    pciSerialInfo(bus, device, function, 0);
+                    pciSerialInfo(bus, device, function, 8);
+                    serial_writestring("AHCI Base address: 0x");
+                    baseAddr = (void*) pciConfigReadWord(bus, device, function, 0x24);
+                    serial_hexword((uint32_t) baseAddr);
+                    serial_writechar('\n');
+                }
+            }
+        }
+    }
+
+    if (baseAddr == 0)
+    {
+        serial_writestring("Could not find an ahci device\n");
+    }
+    return baseAddr;
+}

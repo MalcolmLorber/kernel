@@ -54,6 +54,17 @@ void csub()
     cpush(a-b);
 }
 
+void crsub()
+{
+    if(cstack_size<2)
+	return;
+    int a=cpeek();
+    cpop();
+    int b=cpeek();
+    cpop();
+    cpush(b-a);
+}
+
 void cdiv()
 {
     if(cstack_size<2)
@@ -63,4 +74,15 @@ void cdiv()
     int b=cpeek();
     cpop();
     cpush(a/b);
+}
+
+void crdiv()
+{
+    if(cstack_size<2)
+	return;
+    int a=cpeek();
+    cpop();
+    int b=cpeek();
+    cpop();
+    cpush(b/a);
 }

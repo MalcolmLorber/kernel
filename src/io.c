@@ -72,9 +72,22 @@ void io_process(char* s, int ss)
 	terminal_writeint(cpeek());
 	terminal_putchar('\n');
     }
+    
+    else if(strncmp(s,"rsub",3)==0)
+    {
+	crsub();
+	terminal_writeint(cpeek());
+	terminal_putchar('\n');
+    }
     else if(strncmp(s,"div",3)==0)
     {
 	cdiv();
+	terminal_writeint(cpeek());
+	terminal_putchar('\n');
+    }
+    else if(strncmp(s,"rdiv",3)==0)
+    {
+	crdiv();
 	terminal_writeint(cpeek());
 	terminal_putchar('\n');
     }

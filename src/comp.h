@@ -7,5 +7,7 @@ int cpeek();
 void cadd();
 void cmult();
 void csub();
+void crsub();
 void cdiv();
+void crdiv();
 #endif

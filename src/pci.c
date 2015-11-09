@@ -35,6 +35,8 @@ uint32_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offs
         serial_hexbyte(slot);
         serial_writestring(" function ");
         serial_hexbyte(func);
+        serial_writestring(" with offset ");
+        serial_hexbyte(offset);
         serial_writechar('\n');
     }
     return data;

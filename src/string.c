@@ -69,7 +69,7 @@ int strncmp(const char *s1, const char *s2, size_t n)
     return 0;
 }
 
-int atoi(char *p) 
+int atoi(const char *p) 
 {
     int k = 0;
     while (*p) {
@@ -84,7 +84,7 @@ bool isNumericChar(char x)
     return (x >= '0' && x <= '9')? true: false;
 }
 
-int stoi(char *str)
+int stoi(const char *str)
 {
     if ((*str) == 0)
        return 0;
@@ -108,7 +108,7 @@ int stoi(char *str)
  
     return sign*res;
 }
-double atof(char* num)
+double atof(const char* num)
 {
     if (!num || !*num)
 	return 0; 

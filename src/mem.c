@@ -81,7 +81,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
             uint32_t i;
             for (i = 0; i+0x1000000 < mmap->length; i += 0x1000000)
             {
-                populate_page_table(next_table, (void*) mmap->base_addr + i, 1024 ,0);
+                populate_page_table(next_table, (void*)(intptr_t) mmap->base_addr + i, 1024 ,0);
                 page_directory[current_dir_entry] = (uint32_t) next_table;
                 page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
 
@@ -92,7 +92,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
             // full page table to be mapped. This handlis this case.
             if (i != mmap->length)
             {
-                populate_page_table(next_table, (void*) mmap->base_addr + i, (mmap->length - i) / 0x1000 ,0);
+                populate_page_table(next_table, (void*)(intptr_t) mmap->base_addr + i, (mmap->length - i) / 0x1000 ,0);
                 page_directory[current_dir_entry] = (uint32_t) next_table;
                 page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
 

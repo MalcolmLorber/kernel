@@ -9,4 +9,5 @@ int strcmp(const char* s1, const char* s2);
 int strncmp(const char* s1, const char* s2, size_t n);
 int atoi(char *p);
 int stoi(char* str);
+double atof(char* num);
 #endif

@@ -123,6 +123,14 @@ void kbd_irq()
     {
 	modifiers[MOD_SHIFT]=0;
     }
+    else if(a==0x1d)
+    {
+	modifiers[MOD_CTRL]=1;
+    }
+    else if(a==0x9d)
+    {
+	modifiers[MOD_CTRL]=0;
+    }
     else
     {
 	if(a==0x4b)
@@ -166,6 +174,16 @@ void kbd_irq()
 		    kb_buf[kb_buf_size]='\0';
 		    terminal_putchar(in);
 		}
+	    }
+	    else if(modifiers[MOD_CTRL]==1&&(in=='l'||in=='L'))
+	    {
+		terminal_clear();
+		for(int i=0;i<kb_buf_size;i++)
+		{
+		    kb_buf[i]='\0';
+		}
+		kb_buf_size=0;
+		terminal_writestring("> ");
 	    }
 	    else if(in!='\0')
 	    {

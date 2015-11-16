@@ -126,13 +126,21 @@ void kbd_irq()
     else
     {
 	if(a==0x4b)
+	{
 	    terminal_adjustcursor(-1,0);
+	}
 	else if(a==0x4d)
+	{
 	    terminal_adjustcursor(1,0);
+	}
 	else if(a==0x48)
+	{
 	    terminal_adjustcursor(0,0);//-1);
+	}
 	else if(a==0x50)
+	{
 	    terminal_adjustcursor(0,0);//1);
+	}
 	else if(a<0x80)
 	{
 	    char in = scan_map[a];

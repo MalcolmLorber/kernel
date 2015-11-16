@@ -132,7 +132,8 @@ void terminal_putchar(char c)
 }
 
 const char* hexcharss = "0123456789abcdef";
-void terminal_hexstring(void* s, uint32_t n) {
+void terminal_hexstring(void* s, uint32_t n) 
+{
     char* d = (char*)s;
     for (uint32_t i = 0; i < n; i++)
     {

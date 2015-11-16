@@ -106,6 +106,10 @@ void io_process(char* s, int ss)
 	terminal_writeint(cpeek());
 	terminal_putchar('\n');
     }
+    else 
+    {
+	terminal_writestring("Command not recognized\n");
+    }
 }
 
 void kbd_irq()

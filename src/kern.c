@@ -42,7 +42,7 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     
     serial_writestring("Hello, kernel World!\n");
     terminal_writestring("Hello, kernel World!\n");
-
+    terminal_writestring("> ");
     // Abort if magic is not correct.
     if (magic != 0x2badb002)
     {

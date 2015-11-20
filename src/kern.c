@@ -62,12 +62,12 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     int o=0;
     int j=5/o;
     serial_hexword(j);
-    //test_mem();
     serial_writechar('\n');
 
     // PCI
     checkAllBuses();
     void* ahciAddr = pciFindAHCI();
+    mem_map_directory_entry(ahciAddr, kern_page_dir);
     serial_hexstring(ahciAddr, 0x1100);
 
     test_idt();

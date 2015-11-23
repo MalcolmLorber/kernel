@@ -39,6 +39,22 @@ void serial_writestring(char* s)
 }
 
 const char* hexchars = "0123456789abcdef";
+void serial_hexbyte(uint8_t x)
+{
+    for (int i = 1; i >= 0; i--)
+    {
+        serial_writechar(hexchars[x>>i*4&0xf]);
+    }
+}
+
+void serial_hexhword(uint16_t x)
+{
+    for (int i = 3; i >= 0; i--)
+    {
+        serial_writechar(hexchars[x>>i*4&0xf]);
+    }
+}
+
 void serial_hexword(uint32_t x)
 {
     for (int i = 7; i >= 0; i--)

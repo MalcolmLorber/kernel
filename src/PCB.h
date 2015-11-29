@@ -51,7 +51,7 @@ typedef struct
 {
     uint32_t mem;
     volatile int pid;
-    process* parent;
+    struct process* parent;
     trapframe* tf;
     context* ctxt;
     char name[32];

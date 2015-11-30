@@ -46,9 +46,6 @@ void populate_page_table(page_table_entry* table, void* start, int num, int offs
     }
 }
 
-// TODO: put this as a label at the end of the code, so we can take
-// its address
-#define KERN_END 0x204000
 
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end)
 {
@@ -56,8 +53,8 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
     // Make a page directory structure easily
     page_directory_entry* kern_page_dir = initiate_directory();
 
-    // This line will change with the above TODO
-    page_table_entry* next_table = (page_table_entry*) KERN_END;
+    // _kern_end is defined in the linker script
+    page_table_entry* next_table = (page_table_entry*) &_kernel_end;
 
     int current_dir_entry = 0;
 

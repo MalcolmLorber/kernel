@@ -64,6 +64,18 @@ void* page_allocate()
     return (void*)&_kernel_end + 0x1000 * page_number;
 }
 
+void page_free(void* page_start)
+{
+    if (((uint32_t)page_start & 0xfff) != 0)
+    {
+        serial_writestring("tried to free a non-page as a page");
+    }
+
+    uint32_t page_number = (uint32_t)(page_start - (void*)&_kernel_end) / 0x1000;
+    uint8_t* index = (uint8_t*) &_kernel_end + page_number / 8;
+    *index = ~(~*index | (1<<(8-(page_number%8))));
+}
+
 // This goes through all available memory, and maps 1 to 1 virtual memory to it.
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end)
 {

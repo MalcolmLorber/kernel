@@ -32,7 +32,7 @@ extern char _kernel_end[];
 
 // Allocation of pages
 void* page_allocate();
-
+void page_free(void* page_start);
 
 // Allocatoion of memory
 

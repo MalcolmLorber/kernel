@@ -1,4 +1,4 @@
-global switch
+global context_switch
 switch:
         mov eax, [esp+4]
         mov edx, [esp+8]

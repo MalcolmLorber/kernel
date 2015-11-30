@@ -2,6 +2,7 @@
 #define _PCB_INC
 
 #include <stdint.h>
+#include "mem.h"
 
 typedef struct//all regs in proc
 {
@@ -49,7 +50,7 @@ typedef struct//regs needed for context
 
 typedef struct
 {
-    uint32_t mem;
+    page_directory_entry* mem;
     volatile int pid;
     struct process* parent;
     trapframe* tf;
@@ -57,6 +58,6 @@ typedef struct
     char name[32];
 }__attribute__((packed)) process;
 
-extern void switch(context** old, context* new);
+extern void context_switch(context** old, context* new);
 
 #endif

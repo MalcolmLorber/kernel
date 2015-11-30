@@ -1,6 +1,7 @@
 #ifndef _IDT_INC
 #define _IDT_INC
 
+#include "PCB.h"
 #include <stdint.h>
 
 #define MAX_IDT_INT 256
@@ -24,7 +25,7 @@ typedef struct
 }__attribute__((packed)) idt_desc;
 
 
-struct reg_state
+/*struct reg_state
 {
     uint32_t eax;
     uint32_t ecx;
@@ -34,7 +35,7 @@ struct reg_state
     uint32_t ebp;
     uint32_t esi;
     uint32_t edi;
-}__attribute__((packed));
+    }__attribute__((packed));*/
 
 struct stack_state
 {
@@ -44,7 +45,7 @@ struct stack_state
 }__attribute__((packed));
 
 
-extern void default_handler(struct reg_state reg,uint32_t interrupt, uint32_t error, struct stack_state stack); 
+extern void default_handler(trapframe reg,/*uint32_t interrupt, uint32_t error,*/ struct stack_state stack); 
 extern idt_desc* get_ir(uint32_t i);
 extern int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);
 extern void install_c_ir(uint32_t interrupt, void (*handler) (uint32_t));

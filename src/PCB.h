@@ -27,16 +27,17 @@ typedef struct//all regs in proc
     uint32_t trap;
 
     uint32_t err;
-    uint32_t eip;
-    uint16_t cs;
-    uint16_t cspad;
+    
+    //uint32_t eip;
+    //uint16_t cs;
+    //uint16_t cspad;
 
-    uint32_t eflags;
+    //uint32_t eflags;
 
     //ring changing, for user mode stuff. not used yet
-    uint32_t esp;
-    uint16_t ss;
-    uint16_t sspad;
+    //uint32_t esp;
+    //uint16_t ss;
+    //uint16_t sspad;
 }__attribute__((packed)) trapframe;
 
 typedef struct//regs needed for context

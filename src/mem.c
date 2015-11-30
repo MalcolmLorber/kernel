@@ -64,6 +64,7 @@ void* page_allocate()
     return (void*)&_kernel_end + 0x1000 * page_number;
 }
 
+// page_free just flips the bit to say that the page has been freed
 void page_free(void* page_start)
 {
     if (((uint32_t)page_start & 0xfff) != 0)
@@ -141,6 +142,23 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
     memory_mark = page_allocate();
 
     return kern_page_dir;
+}
+
+page_directory_entry* page_new_directory()
+{
+    page_directory_entry* pgdir = (page_directory_entry*) page_allocate();
+    int i;
+    for(i = 0; i < 1024; i++)
+    {
+        // This sets the following flags to the pages:
+        //   Supervisor: Only kernel-mode can access them
+        //   Write Enabled: It can be both read from and written to
+        //     (this is the 2 bit)
+        //   Not Present: The page table is not present
+        pgdir[i] = 0;
+        pgdir[i] |= PAGE_WRITABLE;
+    }
+    return pgdir;
 }
 
 page_directory_entry* initiate_directory()

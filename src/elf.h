@@ -46,4 +46,7 @@ typedef struct
     uint32_t alignment;
 } elf_program_header;
 
+// Will probably return a pointer to the PCB block eventually. Dunno though.
+void load_elf(elf_header* elf_start);
+
 #endif

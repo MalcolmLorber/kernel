@@ -34,13 +34,12 @@ extern char _kernel_end[];
 void* page_allocate();
 void page_free(void* page_start);
 
-// Allocatoion of memory
-
 // Initilization
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
 
-// Defined in the file mem.c
-page_directory_entry* initiate_directory();
+// Directory handling
+page_directory_entry* page_new_directory();
+page_directory_entry* initiate_directory(); // DEPRECATED
 
 
 // memory mark stores a counter of bytes for the most recently used

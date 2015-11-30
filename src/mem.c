@@ -144,6 +144,21 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
     return kern_page_dir;
 }
 
+// page_map takes in a virtual address and a directory, and ensures
+// that that address points to valid memory
+void page_map(page_directory_entry[] pgdir, void* page_start)
+{
+    if (pgdir[page_start>>22] & 0xfffff == 0)
+    {
+        pgdir[page_start>>22] |= page_new_table();
+    }
+    if (pgdir[page_start>>22][(page_start>>12)%1024] & 0xfffff == 0)
+    {
+        pgdir[page_start>>22][(page_start>>12)%1024] |= page_allocate();
+    }
+}
+
+
 page_directory_entry* page_new_directory()
 {
     page_directory_entry* pgdir = (page_directory_entry*) page_allocate();

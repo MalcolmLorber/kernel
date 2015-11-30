@@ -57,4 +57,6 @@ typedef struct
     char name[32];
 }__attribute__((packed)) process;
 
+extern void switch(context** old, context* new);
+
 #endif

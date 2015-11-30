@@ -46,21 +46,45 @@ void populate_page_table(page_table_entry* table, void* start, int num, int offs
     }
 }
 
+// page_allocate returns the address of a new page in real memory
+void* page_allocate()
+{
+    // The starting address of the map should always be the same: &_kernel_end
 
+    // Find the correct bit to flip and page number
+    uint8_t* index = (uint8_t*) &_kernel_end;
+    while (*index == 0xff) index++;
+    uint8_t i = 7;
+    while ((*index & (1<<i)) != 0) i--;
+
+    // bitfilp
+    *index = *index | (1<<i);
+
+    uint32_t page_number = ((uint32_t)(index - (uint8_t*)_kernel_end) * 8) + (8-i);
+    return (void*)&_kernel_end + 0x1000 * page_number;
+}
+
+// This goes through all available memory, and maps 1 to 1 virtual memory to it.
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end)
 {
+    // Allocate enough space for the biggest possible allocation bitmap. Assigning 1 bit to each
+    for (int i = 0; i < 32; i++)
+    {
+        page_allocate();
+    }
 
     // Make a page directory structure easily
     page_directory_entry* kern_page_dir = initiate_directory();
 
     // _kern_end is defined in the linker script
-    page_table_entry* next_table = (page_table_entry*) &_kernel_end;
+    /* page_table_entry* next_table = (page_table_entry*) &_kernel_end; */
 
     int current_dir_entry = 0;
 
     // For each entry in the memory map
     while (mmap < mmap_end)
     {
+        void* next_table = page_allocate();
         // Special case for the first memory segment - it gets its own directory entry
         if (mmap->base_addr == 0)
         {
@@ -71,7 +95,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
             page_directory[0] |= PAGE_WRITABLE | PAGE_PRESENT;
 
             current_dir_entry = 1;
-            next_table += 0x1000;
+            /* next_table += 0x1000; */
         }
         else if (mmap->type == 1)
         {
@@ -83,7 +107,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
                 page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
 
                 current_dir_entry += 1;
-                next_table += 0x1000;
+                /* next_table += 0x1000; */
             }
             // There will be an edge case where there is less than a
             // full page table to be mapped. This handlis this case.
@@ -94,7 +118,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
                 page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
 
                 current_dir_entry += 1;
-                next_table += 0x1000;
+                /* next_table += 0x1000; */
             }
 
         }
@@ -102,7 +126,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
     }
 
     // let the memory allocator work freely with all remaining memory
-    memory_mark = next_table;
+    memory_mark = page_allocate();
 
     return kern_page_dir;
 }

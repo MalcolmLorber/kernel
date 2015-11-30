@@ -30,9 +30,18 @@ extern void enablePaging();
 // Defined in linker.ld
 extern char _kernel_end[];
 
+// Allocation of pages
+void* page_allocate();
+
+
+// Allocatoion of memory
+
+// Initilization
+page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
+
 // Defined in the file mem.c
 page_directory_entry* initiate_directory();
-page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
+
 
 // memory mark stores a counter of bytes for the most recently used
 // memory. Everything before it is used and all valid memory after it
@@ -42,8 +51,6 @@ void* memory_mark;
 void* malloc(uint32_t bytes);
 
 // Required for elf loading - virtual memory and stuff
-
-#endif
 
 // TODO:
 /*
@@ -68,3 +75,5 @@ void* malloc(uint32_t bytes);
     Problems - how to determine when new pages are needed
              - how to load in elf stuff at arbitrary locations
 */
+
+#endif

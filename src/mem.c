@@ -161,6 +161,24 @@ page_directory_entry* page_new_directory()
     return pgdir;
 }
 
+// Returns a blank table
+page_table_entry* page_new_table()
+{
+    page_table_entry* pgtab = (page_table_entry*) page_allocate();
+    int i;
+    for(i = 0; i < 1024; i++)
+    {
+        // This sets the following flags to the pages:
+        //   Supervisor: Only kernel-mode can access them
+        //   Write Enabled: It can be both read from and written to
+        //     (this is the 2 bit)
+        //   Not Present: The page table is not present
+        pgtab[i] = 0;
+        pgtab[i] |= PAGE_WRITABLE;
+    }
+    return pgtab;
+}
+
 page_directory_entry* initiate_directory()
 {
     // set each entry to not present

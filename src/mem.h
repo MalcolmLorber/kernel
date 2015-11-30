@@ -37,10 +37,10 @@ void page_free(void* page_start);
 // Initilization
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
 
-// Directory handling
+// Directory and table handling
 page_directory_entry* page_new_directory();
+page_table_entry* page_new_table();
 page_directory_entry* initiate_directory(); // DEPRECATED
-
 
 // memory mark stores a counter of bytes for the most recently used
 // memory. Everything before it is used and all valid memory after it

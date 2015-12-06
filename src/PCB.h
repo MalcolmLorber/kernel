@@ -28,9 +28,9 @@ typedef struct//all regs in proc
 
     uint32_t err;
     
-    //uint32_t eip;
-    //uint16_t cs;
-    //uint16_t cspad;
+    uint32_t eip;
+    uint16_t cs;
+    uint16_t cspad;
 
     //uint32_t eflags;
 

@@ -43,17 +43,13 @@ void load_error_handlers()
     }
 }
 
-void default_handler(trapframe reg, /*uint32_t interrupt, uint32_t error,*/ struct stack_state stack) 
+void default_handler(trapframe reg) 
 {
-    uint32_t interrupt = reg.trap;
-    uint32_t error = reg.err;
-    if(interrupt<32)
-	stack.eip+=2;
-    //char f[20];
-    //serial_val(interrupt);
-    if(handlers[interrupt]!=NULL)
+    if(reg.trap<32)
+	reg.eip+=2;
+    if(handlers[reg.trap]!=NULL)
     {
-	handlers[interrupt](error);
+	handlers[reg.trap](reg.err);
     }
     return;
 }

@@ -8,6 +8,10 @@
 #define _ELF_INT
 
 #include <stdint.h>
+#include <stddef.h>
+
+#include "mem.h"
+#include "string.h"
 
 extern uint8_t elf_hello[]  asm("_binary_hello_elf_start");
 
@@ -32,7 +36,7 @@ typedef struct
     uint16_t sh_entry_size;
     uint16_t sh_entry_count;
     uint16_t sh_name_index;
-} __attribute__(packed) elf_header;
+} __attribute__((packed)) elf_header;
 
 typedef struct
 {

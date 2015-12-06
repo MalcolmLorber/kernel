@@ -33,7 +33,7 @@ extern char _kernel_end[];
 // Allocation of pages
 void* page_allocate();
 void page_free(void* page_start);
-void page_map(page_directory_entry[] pgdir, void* page_start);
+void* page_map(page_directory_entry pgdir[], void* page_start);
 
 // Initilization
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);

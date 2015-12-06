@@ -4,7 +4,7 @@
   Mainly, contains the elf loading code
 */
 
-#include "mem.h"
+#include "elf.h"
 
 void load_elf(elf_header* elf_start)
 {
@@ -16,24 +16,21 @@ void load_elf(elf_header* elf_start)
     {
         // get this section header
         elf_program_header* ph;
-        ph = elf_start + elf_start->ph_table_offset + (i * elf_start->ph_entry_size);
+        ph = (elf_program_header*) elf_start + (elf_start->ph_table_offset + (i * elf_start->ph_entry_size));
 
         // map and copy
-        for (pg = ph->p_vaddr & 0xfffff000; pg - ph->p_vaddr < ph->memory_segment_size; pg+=0x1000)
+        for (void* pg = (void*)((uint32_t)ph->p_vaddr & 0xfffff000); (uint32_t)(pg - ph->p_vaddr) < ph->memory_segment_size; pg+=0x1000)
         {
-            real_page = page_allocate(pg);
+            void* real_page = page_map(pgdir, pg);
 
-            start = (pg > ph->p_vaddr) ? pg : ph->p_vaddr;
-            end = (pg + 0x1000 < ph->p_vaddr + ph->file_segment_size) ? pg + 0x1000 : ph->p_vaddr + ph->file_segment_size;
+            void* start = (pg > ph->p_vaddr) ? pg : ph->p_vaddr;
+            void* end = (pg + 0x1000 < ph->p_vaddr + ph->file_segment_size) ? pg + 0x1000 : ph->p_vaddr + ph->file_segment_size;
 
-            size = end - start;
-            offset = (pg > ph->p_vaddr) ? 0 : ph->p_vaddr - pg;
+            size_t size = end - start;
+            size_t offset = (pg > ph->p_vaddr) ? 0 : ph->p_vaddr - pg;
 
             // do some memcpy stuff
             memcpy(real_page + offset, start, size);
-
-            elf_start + p->ph_offset
         }
     }
-
 }

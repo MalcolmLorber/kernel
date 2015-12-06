@@ -32,7 +32,7 @@ typedef struct//all regs in proc
     uint16_t cs;
     uint16_t cspad;
 
-    //uint32_t eflags;
+    uint32_t eflags;
 
     //ring changing, for user mode stuff. not used yet
     //uint32_t esp;

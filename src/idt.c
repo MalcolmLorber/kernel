@@ -105,6 +105,7 @@ int idt_init(uint16_t code_sel)
     idtsetup();
     idt_install();
     load_error_handlers();
+    handlers[0x100] = syscall;
     return 0;
 }
 #pragma GCC pop_options

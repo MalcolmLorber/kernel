@@ -1,5 +1,5 @@
 global context_switch
-switch:
+context_switch:
         mov eax, [esp+4]
         mov edx, [esp+8]
 

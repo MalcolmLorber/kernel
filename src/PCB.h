@@ -49,16 +49,22 @@ typedef struct//regs needed for context
     uint32_t eip;
 }__attribute__((packed)) context;
 
+enum procstate {KILLED, RUNNABLE, RUNNING};
+
 typedef struct
 {
     page_directory_entry* mem;
     volatile int pid;
     struct process* parent;
+    char* kstack;//apparently we need this. idk why
     trapframe* tf;
     context* ctxt;
     char name[32];
+    enum procstate state;
 }__attribute__((packed)) process;
 
 extern void context_switch(context** old, context* new);
+void syscall();
+void setproc(process* proc);
 
 #endif

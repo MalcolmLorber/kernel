@@ -23,16 +23,16 @@ typedef struct
     uint16_t instruction_set;
     uint32_t elf_version_b;
     void*    program_entry_position;
-    uint32_t program_header_table_offset;
-    uint32_t section_header_table_offset;
+    uint32_t ph_table_offset;
+    uint32_t sh_table_offset;
     uint32_t flags;  // undefined in x86
     uint16_t header_size;
-    uint16_t program_header_entry_size;
-    uint16_t program_header_entry_count;
-    uint16_t section_header_entry_size;
-    uint16_t section_header_entry_count;
-    uint16_t section_header_name_index;
-} elf_header;
+    uint16_t ph_entry_size;
+    uint16_t ph_entry_count;
+    uint16_t sh_entry_size;
+    uint16_t sh_entry_count;
+    uint16_t sh_name_index;
+} __attribute__(packed) elf_header;
 
 typedef struct
 {

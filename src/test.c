@@ -6,8 +6,8 @@
 
 void test_idt()
 {
-    asm ("int $0x80");
-    asm ("int $0x90");
+    asm volatile("mov $4, %eax; int $0x80");
+    asm volatile("int $0x90");
 }
 
 void test_mem()

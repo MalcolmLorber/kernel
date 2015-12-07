@@ -17,9 +17,18 @@ interrupt_handler_%1:
 %endmacro
 
 common_handler:
+        push dword ds
+        push dword es
+        push dword fs
+        push dword gs
 	pusha
 	call default_handler
 	popa
+        pop dword gs
+        pop dword fs
+        pop dword es
+        pop dword ds
+        
 	add	esp, 8
 	iret
 

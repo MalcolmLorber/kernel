@@ -35,14 +35,23 @@ inline uint32_t inl(uint16_t port)
     return ret;
 }
 
+uint32_t __int_depth;
+
 inline void disable_int()
 {
     asm volatile ("cli");
+    __int_depth++;
 }
 
 inline void enable_int()
 {
-    asm volatile ("sti");
+    if(__int_depth>0)
+    {
+        if(--__int_depth == 0)
+        {
+            asm volatile ("sti");
+        }
+    }
 }
 
 #endif

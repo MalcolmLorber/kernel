@@ -27,6 +27,10 @@ typedef uint32_t page_table_entry;
 extern void loadPageDirectory(page_directory_entry*);
 extern void enablePaging();
 
+// page_directory is currently defined once and should not be touched
+// later. It must be page aligned for the MMU to read properly
+page_directory_entry kernel_page_directory[1024] __attribute__((aligned(4096)));
+
 // Defined in linker.ld
 extern char _kernel_end[];
 
@@ -36,6 +40,7 @@ void page_free(void* page_start);
 void* page_map(page_directory_entry pgdir[], void* page_start);
 
 // Initilization
+void page_everything(page_directory_entry* pg_dir);
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end);
 
 // Directory and table handling
@@ -50,6 +55,9 @@ void* memory_mark;
 
 void* kmalloc(uint32_t);
 void* malloc(uint32_t bytes);
+
+// Debugging
+void* page_table_inspect(page_directory_entry* pg_dir, void* addr);
 
 // Required for elf loading - virtual memory and stuff
 

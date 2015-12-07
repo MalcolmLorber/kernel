@@ -61,4 +61,26 @@ void load_elf(elf_header* elf_start)
     page_map(pgdir, highest_vpage + 0x1000);
     page_map(pgdir, highest_vpage + 0x2000);
     // initial esp = highest_vpage + 0x1000
+
+    process* pcb = kmalloc(sizeof(process) + sizeof(context) + sizeof(trapframe));
+    pcb->ctxt = pcb + sizeof(process);
+    pcb->tf = pcb + sizeof(process) + sizeof(context)
+
+    pcb->mem = pgdir;
+    pcb->pid = -1;
+    pcb->parent = 0;
+    pcb->kstack = 0;
+    pcb->name = "debugstuff";
+    pcb->procstate = RUNNABLE;
+
+    pcb->ctxt->edi = 0;
+    pcb->ctxt->esi = 0;
+    pcb->ctxt->ebx = 0;
+    pcb->ctxt->ebp = highest_vpage + 0x1000;
+    pcb->ctxt->eip = elf_start->program_entry_position;
+
+    pcb->tf->ebp = highest_vpage + 0x1000;
+    pcb->tf->eip = elf_start->program_entry_position;
+
+
 }

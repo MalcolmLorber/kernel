@@ -13,6 +13,7 @@
 #include "mem.h"
 #include "string.h"
 #include "serial.h"
+#include "PCB.h"
 
 extern uint8_t elf_hello[]  asm("_binary_hello_elf_start");
 

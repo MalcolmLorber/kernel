@@ -20,6 +20,7 @@
 #include "pit.h"
 #include "io.h"
 #include "elf.h"
+#include "PCB.h"
 
 // The parameters passed here ultimately come through the bootloader
 void kernel_main(multiboot_info* mbt, uint32_t magic)
@@ -39,6 +40,7 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     pic_init(0x20,0x28);
     pit_init();
     io_init();
+    proc_setup();
     pit_start_counter(100, PIT_OCW_CONT_0, PIT_OCW_MODE_SQWVGEN);
     enable_int();
 

@@ -65,6 +65,7 @@ typedef struct
 
 extern void context_switch(context** old, context* new);
 void syscall();
-void setproc(process* proc);
+void addproc(process* proc);
+void proc_setup();
 
 #endif

@@ -2,6 +2,7 @@
 #include "string.h"
 #include "serial.h"
 #include "exceptions.h"
+#include "PCB.h"
 
 #pragma GCC push_options
 #pragma GCC optimize ("0")
@@ -45,6 +46,7 @@ void load_error_handlers()
 
 void default_handler(trapframe reg) 
 {
+    settf(&reg);
     if(reg.trap<32)
 	reg.eip+=2;
     if(handlers[reg.trap]!=NULL)
@@ -105,7 +107,7 @@ int idt_init(uint16_t code_sel)
     idtsetup();
     idt_install();
     load_error_handlers();
-    handlers[0x100] = syscall;
+    handlers[0x80] = syscall;
     return 0;
 }
 #pragma GCC pop_options

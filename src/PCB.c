@@ -5,7 +5,7 @@
 #define NUM_PROCS 16
 
 process* procs[NUM_PROCS]; 
-int curproc=-1;
+int curproc=0;
 int firstfree=0;
 
 //process* curproc;
@@ -16,6 +16,11 @@ void addproc(process* proc)
     procs[firstfree]=proc;
     firstfree++;
     //curproc=proc; 
+}
+
+void settf(trapframe* tf)
+{
+    procs[curproc]->tf = tf;
 }
 
 void schedule()
@@ -46,13 +51,13 @@ int yield()
 
 int print1()
 {
-    terminal_writestring("1");
+    terminal_writestring("1\n");
     return 1;
 }
 
 int print2()
 {
-    terminal_writestring("2");
+    terminal_writestring("2\n");
     return 2;
 }
 
@@ -63,13 +68,18 @@ void syscall()
 {
     int num = procs[curproc]->tf->eax;
     
+    serial_hexword(num);
+    serial_writestring(" SYSCALLED\n");
+    
     if(num>0 && num<NUM_SYSCALLS && syscalls[num])
     {
         procs[curproc]->tf->eax = syscalls[num]();
     }
     else
     {
-        serial_writestring("UNKNOWN SYSCALL CALLED\n");
+        serial_writestring("UNKNOWN SYSCALL CALLED ");
+        serial_hexword(num);
+        serial_writestring("\n");
         procs[curproc]->tf->eax = -1;
     }
 }

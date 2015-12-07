@@ -59,7 +59,14 @@ void int_general_protection_fault(uint32_t __attribute__((unused))error)
 }
 void int_page_fault(uint32_t __attribute__((unused))error)
 {
-    serial_writestring("PAGE FAULT ERROR\n");
+    serial_writestring("PAGE FAULT ERROR ");
+    serial_hexword(error);
+    uint32_t cr2;
+    asm volatile("movl %%cr2, %0" : "=r" (cr2) : );
+    //register uint32_t cr2 asm("%%cr2");
+    serial_writestring(" ");
+    serial_hexword(cr2);
+    serial_writestring("\n");
 }
 void int_reserved(uint32_t __attribute__((unused))error)
 {

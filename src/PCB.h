@@ -66,6 +66,7 @@ typedef struct
 extern void context_switch(context** old, context* new);
 void syscall();
 void addproc(process* proc);
+void settf(trapframe* tf);
 void proc_setup();
 
 #endif

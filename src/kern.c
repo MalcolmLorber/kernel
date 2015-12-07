@@ -19,13 +19,19 @@
 #include "pic.h"
 #include "pit.h"
 #include "io.h"
+#include "elf.h"
 
 // The parameters passed here ultimately come through the bootloader
 void kernel_main(multiboot_info* mbt, uint32_t magic)
 {
+
     /* Initialize terminal and serial interfaces */
     terminal_initialize();
     serial_init();
+
+    // For some reason 'myos.bin ' is here. remove it.
+    memset(&_kernel_end, 0, 20);
+
     gdt_init();
     idt_init(0x8);
     serial_writestring("IDT initialized\n");
@@ -67,6 +73,12 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
 
     // PCI
     checkAllBuses();
+
+    // Elf testing
+    // This is defined in elf.h
+    serial_writestring("Elf address: 0x");
+    serial_hexstring(elf_hello, 4);
+    serial_writestring("\n");
 
     test_idt();
     while(true)

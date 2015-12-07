@@ -46,24 +46,58 @@ void populate_page_table(page_table_entry* table, void* start, int num, int offs
     }
 }
 
-// TODO: put this as a label at the end of the code, so we can take
-// its address
-#define KERN_END 0x204000
+// page_allocate returns the address of a new page in real memory
+void* page_allocate()
+{
+    // The starting address of the map should always be the same: &_kernel_end
 
+    // Find the correct bit to flip and page number
+    uint8_t* index = (uint8_t*) &_kernel_end;
+    while (*index == 0xff) index++;
+    uint8_t i = 7;
+    while ((*index & (1<<i)) != 0) i--;
+
+    // bitfilp
+    *index = *index | (1<<i);
+
+    uint32_t page_number = ((uint32_t)(index - (uint8_t*)_kernel_end) * 8) + (8-i);
+    return (void*)&_kernel_end + 0x1000 * page_number;
+}
+
+// page_free just flips the bit to say that the page has been freed
+void page_free(void* page_start)
+{
+    if (((uint32_t)page_start & 0xfff) != 0)
+    {
+        serial_writestring("tried to free a non-page as a page");
+    }
+
+    uint32_t page_number = (uint32_t)(page_start - (void*)&_kernel_end) / 0x1000;
+    uint8_t* index = (uint8_t*) &_kernel_end + page_number / 8;
+    *index = ~(~*index | (1<<(8-(page_number%8))));
+}
+
+// This goes through all available memory, and maps 1 to 1 virtual memory to it.
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end)
 {
+    // Allocate enough space for the biggest possible allocation bitmap. Assigning 1 bit to each
+    for (int i = 0; i < 32; i++)
+    {
+        page_allocate();
+    }
 
     // Make a page directory structure easily
     page_directory_entry* kern_page_dir = initiate_directory();
 
-    // This line will change with the above TODO
-    page_table_entry* next_table = (page_table_entry*) KERN_END;
+    // _kern_end is defined in the linker script
+    /* page_table_entry* next_table = (page_table_entry*) &_kernel_end; */
 
     int current_dir_entry = 0;
 
     // For each entry in the memory map
     while (mmap < mmap_end)
     {
+        void* next_table = page_allocate();
         // Special case for the first memory segment - it gets its own directory entry
         if (mmap->base_addr == 0)
         {
@@ -74,7 +108,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
             page_directory[0] |= PAGE_WRITABLE | PAGE_PRESENT;
 
             current_dir_entry = 1;
-            next_table += 0x1000;
+            /* next_table += 0x1000; */
         }
         else if (mmap->type == 1)
         {
@@ -86,7 +120,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
                 page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
 
                 current_dir_entry += 1;
-                next_table += 0x1000;
+                /* next_table += 0x1000; */
             }
             // There will be an edge case where there is less than a
             // full page table to be mapped. This handlis this case.
@@ -97,7 +131,7 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
                 page_directory[current_dir_entry] |= PAGE_WRITABLE | PAGE_PRESENT;
 
                 current_dir_entry += 1;
-                next_table += 0x1000;
+                /* next_table += 0x1000; */
             }
 
         }
@@ -105,9 +139,63 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
     }
 
     // let the memory allocator work freely with all remaining memory
-    memory_mark = next_table;
+    memory_mark = page_allocate();
 
     return kern_page_dir;
+}
+
+// page_map takes in a virtual address and a directory, and ensures
+// that that address points to valid memory
+void* page_map(page_directory_entry pgdir[], void* page_start)
+{
+    void* page = 0;
+    if ((pgdir[(uint32_t)page_start>>22] & 0xfffff) == 0)
+    {
+        pgdir[(uint32_t)page_start>>22] |= (page_directory_entry)page_new_table();
+    }
+    page_table_entry* page_table = (page_table_entry*) ((uint32_t) pgdir[(uint32_t)page_start>>22] & 0xfffff000);
+    if ((page_table[((uint32_t)page_start >> 12) % 1024] & 0xfffff) == 0)
+    {
+        page = page_allocate();
+        page_table[((uint32_t)page_start>>12)%1024] |= (page_table_entry)page;
+    }
+    return page;
+}
+
+
+page_directory_entry* page_new_directory()
+{
+    page_directory_entry* pgdir = (page_directory_entry*) page_allocate();
+    int i;
+    for(i = 0; i < 1024; i++)
+    {
+        // This sets the following flags to the pages:
+        //   Supervisor: Only kernel-mode can access them
+        //   Write Enabled: It can be both read from and written to
+        //     (this is the 2 bit)
+        //   Not Present: The page table is not present
+        pgdir[i] = 0;
+        pgdir[i] |= PAGE_WRITABLE;
+    }
+    return pgdir;
+}
+
+// Returns a blank table
+page_table_entry* page_new_table()
+{
+    page_table_entry* pgtab = (page_table_entry*) page_allocate();
+    int i;
+    for(i = 0; i < 1024; i++)
+    {
+        // This sets the following flags to the pages:
+        //   Supervisor: Only kernel-mode can access them
+        //   Write Enabled: It can be both read from and written to
+        //     (this is the 2 bit)
+        //   Not Present: The page table is not present
+        pgtab[i] = 0;
+        pgtab[i] |= PAGE_WRITABLE;
+    }
+    return pgtab;
 }
 
 page_directory_entry* initiate_directory()
@@ -137,4 +225,10 @@ void* malloc(uint32_t bytes)
     void* old_mark = memory_mark;
     memory_mark = (void*)((uint32_t)memory_mark + bytes);
     return old_mark;
+}
+
+
+void* kmalloc(uint32_t size __attribute__((unused)))
+{
+    return page_allocate();
 }

@@ -1,17 +1,29 @@
 #include "string.h"
 #include <stdbool.h>
 
-void *memset(void *s, int c, size_t n){
+void *memset(void *s, int c, size_t n)
+{
     unsigned char* p=s;
     while(n--)
 	*p++=(unsigned char) c;
     return s;
 }
 
+void memcpy(void* dest, void* src, size_t n)
+{
+    size_t i;
+    char* d = (char*) dest;
+    char* s = (char*) src;
+    for (i = 0; i < n; ++i)
+    {
+        d[i] = s[i];
+    }
+}
+
 void reverse ( char s[] )
 {
     int c, i, j;
-    
+
     for (i=0, j= strlen(s)-1;i<j;i++,j--)
     {
 	c = s[i];
@@ -23,7 +35,7 @@ void reverse ( char s[] )
 void itoa(int n, char s[])
 {
      int i, sign;
-     
+
      if ((sign = n) < 0)  /* record sign */
      {
          n = -n;          /* make n positive */
@@ -42,7 +54,7 @@ void itoa(int n, char s[])
 }
 
 
-size_t strlen(const char* str) 
+size_t strlen(const char* str)
 {
     size_t ret = 0;
     while ( str[ret] != 0 )
@@ -69,7 +81,7 @@ int strncmp(const char *s1, const char *s2, size_t n)
     return 0;
 }
 
-int atoi(const char *p) 
+int atoi(const char *p)
 {
     int k = 0;
     while (*p) {
@@ -88,36 +100,36 @@ int stoi(const char *str)
 {
     if ((*str) == 0)
        return 0;
- 
+
     int res = 0;
     int sign = 1;
-    int i = 0; 
- 
+    int i = 0;
+
     if (str[0] == '-')
     {
         sign = -1;
         i++;
     }
- 
+
     for (; str[i] != '\0'; ++i)
     {
         if (isNumericChar(str[i]) == false)
             return 0;
         res = res*10 + str[i] - '0';
     }
- 
+
     return sign*res;
 }
 double atof(const char* num)
 {
     if (!num || !*num)
-	return 0; 
+	return 0;
     double integerPart = 0;
     double fractionPart = 0;
     int divisorForFraction = 1;
     int sign = 1;
     bool inFraction = false;
-    
+
     if (*num == '-')
     {
 	++num;

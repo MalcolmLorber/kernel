@@ -63,24 +63,25 @@ void load_elf(elf_header* elf_start)
     // initial esp = highest_vpage + 0x1000
 
     process* pcb = kmalloc(sizeof(process) + sizeof(context) + sizeof(trapframe));
-    pcb->ctxt = pcb + sizeof(process);
-    pcb->tf = pcb + sizeof(process) + sizeof(context)
+    pcb->ctxt = (context*)((size_t)pcb + sizeof(process));
+    pcb->tf = (trapframe*)((size_t)pcb + sizeof(process) + sizeof(context));
 
     pcb->mem = pgdir;
     pcb->pid = -1;
     pcb->parent = 0;
     pcb->kstack = 0;
-    pcb->name = "debugstuff";
-    pcb->procstate = RUNNABLE;
+    //pcb->name = "debugstuff";
+    pcb->state = RUNNABLE;
 
     pcb->ctxt->edi = 0;
     pcb->ctxt->esi = 0;
     pcb->ctxt->ebx = 0;
-    pcb->ctxt->ebp = highest_vpage + 0x1000;
-    pcb->ctxt->eip = elf_start->program_entry_position;
+    pcb->ctxt->ebp = (uint32_t)highest_vpage + 0x1000;
+    pcb->ctxt->eip = (uint32_t)elf_start->program_entry_position;
 
-    pcb->tf->ebp = highest_vpage + 0x1000;
-    pcb->tf->eip = elf_start->program_entry_position;
+    pcb->tf->ebp = (uint32_t)highest_vpage + 0x1000;
+    pcb->tf->eip = (uint32_t)elf_start->program_entry_position;
 
-
+    addproc(pcb);
+    asm("mov $3, %eax; int 0x80");
 }

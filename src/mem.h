@@ -48,6 +48,7 @@ page_directory_entry* initiate_directory(); // DEPRECATED
 // is free
 void* memory_mark;
 
+void* kmalloc(uint32_t);
 void* malloc(uint32_t bytes);
 
 // Required for elf loading - virtual memory and stuff

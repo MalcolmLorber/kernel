@@ -226,3 +226,9 @@ void* malloc(uint32_t bytes)
     memory_mark = (void*)((uint32_t)memory_mark + bytes);
     return old_mark;
 }
+
+
+void* kmalloc(uint32_t size __attribute__((unused)))
+{
+    return page_allocate();
+}

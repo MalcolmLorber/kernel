@@ -11,16 +11,31 @@ void load_elf(elf_header* elf_start)
     // The elf will get its own memory space.
     page_directory_entry* pgdir = page_new_directory();
 
+    void* highest_vpage = (void*)0;
+
+    serial_writestring("Loading elf\n");
+
     // loop through and copy memory segments
     for (int i = 0; i < elf_start->ph_entry_count; i++)
     {
+        serial_writestring("Loading memory segment\n");
+
         // get this section header
         elf_program_header* ph;
-        ph = (elf_program_header*) elf_start + (elf_start->ph_table_offset + (i * elf_start->ph_entry_size));
+        ph = (elf_program_header*) ((uint32_t)elf_start + (uint32_t)(elf_start->ph_table_offset + (i * elf_start->ph_entry_size)));
+
+        serial_hexword((uint32_t)elf_start);
+        serial_writechar('\n');
+        serial_hexword((uint32_t)ph);
+        serial_writechar('\n');
+        serial_hexword((uint32_t)elf_start + (uint32_t)(elf_start->ph_table_offset + (i * elf_start->ph_entry_size)));
+        serial_writechar('\n');
 
         // map and copy
-        for (void* pg = (void*)((uint32_t)ph->p_vaddr & 0xfffff000); (uint32_t)(pg - ph->p_vaddr) < ph->memory_segment_size; pg+=0x1000)
+        for (void* pg = (void*)((uint32_t)ph->p_vaddr & 0xfffff000); ((int)pg - (int)ph->p_vaddr) < (int)ph->memory_segment_size; pg+=0x1000)
         {
+            serial_writestring("Copying in memory segment\n");
+
             void* real_page = page_map(pgdir, pg);
 
             void* start = (pg > ph->p_vaddr) ? pg : ph->p_vaddr;
@@ -30,7 +45,21 @@ void load_elf(elf_header* elf_start)
             size_t offset = (pg > ph->p_vaddr) ? 0 : ph->p_vaddr - pg;
 
             // do some memcpy stuff
+            serial_hexword((uint32_t)real_page);
+            serial_writechar('\n');
             memcpy(real_page + offset, start, size);
+
+            // save the highest start
+            if (pg > highest_vpage)
+            {
+                highest_vpage = pg;
+            }
+            break;
         }
     }
+
+    // Allocate two more pages for stack
+    page_map(pgdir, highest_vpage + 0x1000);
+    page_map(pgdir, highest_vpage + 0x2000);
+    // initial esp = highest_vpage + 0x1000
 }

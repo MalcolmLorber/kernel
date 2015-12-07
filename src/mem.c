@@ -9,10 +9,6 @@
 // later. It must be page aligned for the MMU to read properly
 page_directory_entry page_directory[1024] __attribute__((aligned(4096)));
 
-// page_table_one is the first page table, and at the beginning the
-// only page table in the page directory
-page_table_entry page_table_one[1024] __attribute__((aligned(4096)));
-
 // populate_page_table makes a page table at `table` mapping `num`
 // pages to bytes after `start + offset*4KB`
 // both table and start must be properly aligned
@@ -149,16 +145,17 @@ page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot
 void* page_map(page_directory_entry pgdir[], void* page_start)
 {
     void* page = 0;
-    if ((pgdir[(uint32_t)page_start>>22] & 0xfffff) == 0)
+    if ((pgdir[(uint32_t)page_start>>22] & 0xfffff000) == 0)
     {
         pgdir[(uint32_t)page_start>>22] |= (page_directory_entry)page_new_table();
     }
     page_table_entry* page_table = (page_table_entry*) ((uint32_t) pgdir[(uint32_t)page_start>>22] & 0xfffff000);
-    if ((page_table[((uint32_t)page_start >> 12) % 1024] & 0xfffff) == 0)
+    if ((page_table[((uint32_t)page_start >> 12) % 1024] & 0xfffff000) == 0)
     {
         page = page_allocate();
         page_table[((uint32_t)page_start>>12)%1024] |= (page_table_entry)page;
     }
+
     return page;
 }
 

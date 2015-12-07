@@ -82,6 +82,8 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     serial_hexstring(elf_hello, 4);
     serial_writestring("\n");
 
+    load_elf((elf_header*)&elf_hello);
+
     test_idt();
     while(true)
     {

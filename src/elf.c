@@ -45,8 +45,7 @@ void load_elf(elf_header* elf_start)
             size_t offset = (pg > ph->p_vaddr) ? 0 : ph->p_vaddr - pg;
 
             // do some memcpy stuff
-            serial_hexword((uint32_t)real_page);
-            serial_writechar('\n');
+            page_table_inspect(kernel_page_directory, real_page);
             memcpy(real_page + offset, start, size);
 
             // save the highest start

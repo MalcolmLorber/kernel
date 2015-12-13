@@ -83,5 +83,5 @@ void load_elf(elf_header* elf_start)
     pcb->tf->eip = (uint32_t)elf_start->program_entry_position;
 
     addproc(pcb);
-    asm("mov $3, %eax; int 0x80");
+    //asm("mov $3, %eax; int 0x80");
 }

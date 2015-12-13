@@ -31,7 +31,13 @@ void schedule()
     {
         curproc=(curproc<NUM_PROCS-1)?curproc+1:0;
     }
-    context_switch(&procs[old]->ctxt, procs[curproc]->ctxt);
+    serial_writestring("Gonna context switch with:\neip ");
+    serial_hexword(procs[curproc]->ctxt->eip);
+    serial_writestring("\nebp ");
+    serial_hexword(procs[curproc]->ctxt->ebp);
+    serial_writestring("\n");
+    context_switch(&procs[old]->ctxt, procs[curproc]->ctxt, procs[curproc]->mem);
+    serial_writestring("Switched\n");
     //procs[old]->state=RUNNABLE;
     procs[curproc]->state=RUNNING;
     //process* t = curproc;

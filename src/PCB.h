@@ -63,10 +63,10 @@ typedef struct
     enum procstate state;
 }__attribute__((packed)) process;
 
-extern void context_switch(context** old, context* new);
+extern void context_switch(context** old, context* new, page_directory_entry* cr3);
 void syscall();
 void addproc(process* proc);
 void settf(trapframe* tf);
 void proc_setup();
-
+int yield();
 #endif

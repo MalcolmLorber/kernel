@@ -31,7 +31,9 @@ void schedule()
     {
         curproc=(curproc<NUM_PROCS-1)?curproc+1:0;
     }
+    serial_writestring("about to switch\n");
     context_switch(&procs[old]->ctxt, procs[curproc]->ctxt);
+    serial_writestring("switched\n");
     //procs[old]->state=RUNNABLE;
     procs[curproc]->state=RUNNING;
     //process* t = curproc;
@@ -44,6 +46,7 @@ int yield()
 {
     //lock mutex
     procs[curproc]->state = RUNNABLE;
+    serial_writestring("about to schedule\n");
     schedule();
     //unlock mutex
     return 1;

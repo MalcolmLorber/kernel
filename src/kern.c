@@ -67,11 +67,11 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     enablePaging();
 
     serial_writestring("Finished Initilizing memory\n");
-    int o=0;
-    int j=5/o;
-    serial_hexword(j);
+    //int o=0;
+    //int j=5/o;
+    //serial_hexword(j);
     //test_mem();
-    serial_writechar('\n');
+    //serial_writechar('\n');
 
     // PCI
     checkAllBuses();
@@ -86,6 +86,7 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     
     pit_init();
     pit_start_counter(100, PIT_OCW_CONT_0, PIT_OCW_MODE_SQWVGEN);
+    serial_writestring("enabling interrupts\n");
     enable_int();
 
 

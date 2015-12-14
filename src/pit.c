@@ -18,6 +18,7 @@ void pit_irq()
     pic_command(0, PIC_OCW2_EOI);
     //serial_writestring("PIT tickn\n");
     //asm volatile("nop;nop;nop;popa; iret;");
+    serial_writestring("ticked, yielding\n");
     yield();
 }
 

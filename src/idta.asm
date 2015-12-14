@@ -1,9 +1,14 @@
 extern default_handler
 extern idt_ftoi
+extern kstack
 	
 %macro error_interrupt 1
 global interrupt_handler_%1
 interrupt_handler_%1:
+        push ebp
+        push esp
+        mov ebp, kstack
+        mov esp, kstack
 	push 	dword %1
 	jmp 	common_handler
 %endmacro
@@ -12,6 +17,10 @@ interrupt_handler_%1:
 global interrupt_handler_%1
 interrupt_handler_%1:
 	push 	dword 0
+        push ebp
+        push esp
+        mov ebp, kstack
+        mov esp, kstack
 	push 	dword %1
 	jmp 	common_handler
 %endmacro
@@ -29,7 +38,10 @@ common_handler:
         pop dword es
         pop dword ds
         
-	add	esp, 8
+	add	esp, 4
+        pop esp
+        pop ebp
+        add	esp, 4
 	iret
 
 regular_interrupt 0

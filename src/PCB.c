@@ -90,4 +90,5 @@ void proc_setup()
     {
         procs[i]=NULL;
     }
+    kstack = kmalloc(4096);
 }

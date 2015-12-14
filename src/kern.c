@@ -38,11 +38,11 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     serial_writestring("IDT initialized\n");
     disable_int();
     pic_init(0x20,0x28);
-    pit_init();
+    //pit_init();
     io_init();
     proc_setup();
-    pit_start_counter(100, PIT_OCW_CONT_0, PIT_OCW_MODE_SQWVGEN);
-    enable_int();
+    //pit_start_counter(100, PIT_OCW_CONT_0, PIT_OCW_MODE_SQWVGEN);
+    //enable_int();
 
 	/* Since there is no support for newlines in terminal_putchar
          * yet, '\n' will produce some VGA specific character instead.
@@ -83,6 +83,11 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     serial_writestring("\n");
 
     load_elf((elf_header*)&elf_hello);
+    
+    pit_init();
+    pit_start_counter(100, PIT_OCW_CONT_0, PIT_OCW_MODE_SQWVGEN);
+    enable_int();
+
 
     test_idt();
     while(true)

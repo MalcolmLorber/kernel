@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "mem.h"
 
+void* kstack;
+
 typedef struct//all regs in proc
 {
     uint32_t edi;
@@ -25,6 +27,9 @@ typedef struct//all regs in proc
     uint16_t dspad;
 
     uint32_t trap;
+    
+    uint32_t mmm;
+    uint32_t why;
 
     uint32_t err;
     
@@ -68,5 +73,5 @@ void syscall();
 void addproc(process* proc);
 void settf(trapframe* tf);
 void proc_setup();
-
+int yield();
 #endif

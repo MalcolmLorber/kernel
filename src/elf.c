@@ -57,6 +57,9 @@ void load_elf(elf_header* elf_start)
         }
     }
 
+    // Map the kernel 1:1 in memory
+    page_region(pgdir, 0x0, &_kernel_end);
+
     // Allocate two more pages for stack
     page_map(pgdir, highest_vpage + 0x1000);
     page_map(pgdir, highest_vpage + 0x2000);

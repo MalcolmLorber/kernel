@@ -38,6 +38,7 @@ extern char _kernel_end[];
 void* page_allocate();
 void page_free(void* page_start);
 void* page_map(page_directory_entry pgdir[], void* page_start);
+void page_region(page_directory_entry pgdir[], void* begin, void* end);
 
 // Initilization
 void page_everything(page_directory_entry* pg_dir);

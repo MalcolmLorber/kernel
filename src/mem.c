@@ -85,6 +85,23 @@ void page_everything(page_directory_entry* pg_dir)
     }
 }
 
+// page_region adds page tables to map to real memory for a region
+void page_region(page_directory_entry pgdir[], void* begin, void* end)
+{
+    for (void* page = begin; page < end; page += 0x1000)
+    {
+        if ((pgdir[(uint32_t)page>>22] & 0xfffff000) == 0)
+        {
+            pgdir[(uint32_t)page>>22] |= (page_directory_entry)page_new_table();
+        }
+        page_table_entry* page_table = (page_table_entry*) ((uint32_t) pgdir[(uint32_t)page>>22] & 0xfffff000);
+        if ((page_table[((uint32_t)page >> 12) % 1024] & 0xfffff000) == 0)
+        {
+            page_table[((uint32_t)page>>12)%1024] |= (page_table_entry)page;
+        }
+    }
+}
+
 // This goes through all available memory, and maps 1 to 1 virtual memory to it.
 page_directory_entry* mem_init_kern_tables(multiboot_memory_map* mmap, multiboot_memory_map* mmap_end)
 {

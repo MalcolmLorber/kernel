@@ -69,6 +69,9 @@ void load_elf(elf_header* elf_start)
     pcb->ctxt = (context*)((size_t)pcb + sizeof(process));
     pcb->tf = (trapframe*)((size_t)pcb + sizeof(process) + sizeof(context));
 
+    // And of course, a kstack
+    pcb->kstack = (char*)kmalloc(0x1000);
+
     pcb->mem = pgdir;
     pcb->pid = -1;
     pcb->parent = 0;

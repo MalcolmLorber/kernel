@@ -27,12 +27,12 @@ typedef struct//all regs in proc
     uint16_t dspad;
 
     uint32_t trap;
-    
+
     uint32_t mmm;
     uint32_t why;
 
     uint32_t err;
-    
+
     uint32_t eip;
     uint16_t cs;
     uint16_t cspad;
@@ -61,7 +61,7 @@ typedef struct
     page_directory_entry* mem;
     volatile int pid;
     struct process* parent;
-    char* kstack;//apparently we need this. idk why
+    char* kstack; //apparently we need this. idk why
     trapframe* tf;
     context* ctxt;
     char name[32];

@@ -32,7 +32,7 @@ void schedule()
         curproc=(curproc<NUM_PROCS-1)?curproc+1:0;
     }
     serial_writestring("about to switch\n");
-    context_switch(&procs[old]->ctxt, procs[curproc]->ctxt);
+    //context_switch(&procs[old]->ctxt, procs[curproc]->ctxt);
     serial_writestring("switched\n");
     //procs[old]->state=RUNNABLE;
     procs[curproc]->state=RUNNING;

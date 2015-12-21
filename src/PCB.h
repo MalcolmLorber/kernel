@@ -47,6 +47,7 @@ typedef struct//all regs in proc
 
 typedef struct//regs needed for context
 {
+    uint3t_t cr3;
     uint32_t edi;
     uint32_t esi;
     uint32_t ebx;

@@ -7,10 +7,12 @@ context_switch:
         push ebx
         push esi
         push edi
+        push cr3
 
         mov [eax], esp
         mov esp, edx
 
+        pop cr3
         pop edi
         pop esi
         pop ebx

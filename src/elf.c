@@ -75,7 +75,7 @@ void load_elf(elf_header* elf_start)
     pcb->mem = pgdir;
     pcb->pid = -1;
     pcb->parent = 0;
-    pcb->kstack = 0;
+    //pcb->kstack = 0;
     //pcb->name = "debugstuff";
     pcb->state = RUNNABLE;
 

@@ -79,6 +79,7 @@ void load_elf(elf_header* elf_start)
     //pcb->name = "debugstuff";
     pcb->state = RUNNABLE;
 
+    pcb->ctxt->cr3 = pgdir;
     pcb->ctxt->edi = 0;
     pcb->ctxt->esi = 0;
     pcb->ctxt->ebx = 0;

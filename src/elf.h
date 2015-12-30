@@ -5,7 +5,7 @@
 */
 
 #ifndef _ELF_INC
-#define _ELF_INT
+#define _ELF_INC
 
 #include <stdint.h>
 #include <stddef.h>

@@ -86,7 +86,9 @@ void kernel_main(multiboot_info* mbt, uint32_t magic)
     
     pit_init();
     pit_start_counter(100, PIT_OCW_CONT_0, PIT_OCW_MODE_SQWVGEN);
-    serial_writestring("enabling interrupts\n");
+    serial_writestring("_kernel_end: ");
+    serial_hexword((uintptr_t)&_kernel_end);
+    serial_writestring("\nenabling interrupts\n");
     enable_int();
 
 

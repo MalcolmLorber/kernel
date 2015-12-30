@@ -10,6 +10,10 @@ context_switch:
         mov ecx, cr3
         push ecx
 
+        ; CR3 PROBLEM - STACK CHANGES, CANT ACCESS NEW MEM?
+        ; WHY IS PROCS[CURPROC]->CTXT IN PROCESS MEM, NOT
+        ; IN KERNEL MEM? INTERROGATE FREMMA
+
         mov [eax], esp
         mov esp, edx
 

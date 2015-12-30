@@ -53,6 +53,10 @@ void* page_allocate()
     *index = *index | (1<<i);
 
     uint32_t page_number = ((uint32_t)(index - (uint8_t*)_kernel_end) * 8) + (8-i);
+    //serial_hexword(page_number);
+    //serial_writestring(" page allocated at address ");
+    //serial_hexword((uintptr_t)(void*)&_kernel_end + 0x1000 * page_number);
+    //serial_writestring("\n");
     return (void*)&_kernel_end + 0x1000 * page_number;
 }
 

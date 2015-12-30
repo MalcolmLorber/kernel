@@ -1,6 +1,7 @@
 #include "PCB.h"
 #include "serial.h"
 #include "term.h"
+#include "idt.h"
 #define NUM_SYSCALLS 256
 #define NUM_PROCS 16
 
@@ -26,13 +27,19 @@ void settf(trapframe* tf)
 void schedule()
 {
     int old = curproc;
-    curproc++;
-    while(procs[curproc]==0 || procs[curproc]->state!=RUNNABLE)
+    curproc=0;//++;
+    /*while(procs[curproc]==0 || procs[curproc]->state!=RUNNABLE)
     {
         curproc=(curproc<NUM_PROCS-1)?curproc+1:0;
-    }
-    serial_writestring("about to switch\n");
-    //context_switch(&procs[old]->ctxt, procs[curproc]->ctxt);
+        }*/
+    serial_writestring("about to switch\nto ctxt at: ");
+    serial_hexword((uintptr_t)procs[curproc]->ctxt);
+    serial_writestring("\neip: ");
+    serial_hexword(procs[curproc]->ctxt->eip);
+    serial_writestring("\ncr3: ");
+    serial_hexword(procs[curproc]->ctxt->cr3);
+    serial_writestring("\n");
+    context_switch(&procs[old]->ctxt, procs[curproc]->ctxt);
     serial_writestring("switched\n");
     //procs[old]->state=RUNNABLE;
     procs[curproc]->state=RUNNING;

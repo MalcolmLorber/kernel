@@ -5,10 +5,14 @@
 */
 
 #include "elf.h"
+#include "idt.h"
 
 void load_elf(elf_header* elf_start)
 {
     // The elf will get its own memory space.
+    serial_writestring("_elf_start entry: ");
+    serial_hexword((uintptr_t)elf_start->program_entry_position);
+    serial_writestring("\n");
     page_directory_entry* pgdir = page_new_directory();
 
     void* highest_vpage = (void*)0;
@@ -65,13 +69,16 @@ void load_elf(elf_header* elf_start)
     page_map(pgdir, highest_vpage + 0x2000);
     // initial esp = highest_vpage + 0x1000
 
-    process* pcb = kmalloc(sizeof(process) + sizeof(context) + sizeof(trapframe));
-    pcb->ctxt = (context*)((size_t)pcb + sizeof(process));
-    pcb->tf = (trapframe*)((size_t)pcb + sizeof(process) + sizeof(context));
+    process* pcb = kmalloc(sizeof(process));// + sizeof(context) + sizeof(trapframe));
+    //pcb->ctxt = (context*)((size_t)pcb + sizeof(process));
+    //pcb->tf = (trapframe*)((size_t)pcb + sizeof(process) + sizeof(context));
 
     // And of course, a kstack
     pcb->kstack = (char*)kmalloc(0x1000);
-
+    pcb->tf = (trapframe*)(pcb->kstack);// + sizeof(trapframe));
+    pcb->ctxt = (context*)(pcb->tf + sizeof(trapframe));//sizeof(context));
+    
+    
     pcb->mem = pgdir;
     pcb->pid = -1;
     pcb->parent = 0;
@@ -79,13 +86,15 @@ void load_elf(elf_header* elf_start)
     //pcb->name = "debugstuff";
     pcb->state = RUNNABLE;
 
-    pcb->ctxt->cr3 = pgdir;
+    pcb->ctxt->cr3 = (uintptr_t)pgdir;
     pcb->ctxt->edi = 0;
     pcb->ctxt->esi = 0;
     pcb->ctxt->ebx = 0;
-    pcb->ctxt->ebp = (uint32_t)highest_vpage + 0x1000;
-    pcb->ctxt->eip = (uint32_t)elf_start->program_entry_position;
+    pcb->ctxt->ebp = (uintptr_t)pcb->tf;//(uint32_t)highest_vpage + 0x1000;
+    pcb->ctxt->eip = (uintptr_t)default_handler;//(uint32_t)elf_start->program_entry_position;
 
+    pcb->tf->eax = 4;
+    pcb->tf->trap = 0x80;
     pcb->tf->ebp = (uint32_t)highest_vpage + 0x1000;
     pcb->tf->eip = (uint32_t)elf_start->program_entry_position;
 

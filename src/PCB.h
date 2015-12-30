@@ -28,8 +28,8 @@ typedef struct//all regs in proc
 
     uint32_t trap;
 
-    uint32_t mmm;
-    uint32_t why;
+    //uint32_t mmm;
+    //uint32_t why;
 
     uint32_t err;
 

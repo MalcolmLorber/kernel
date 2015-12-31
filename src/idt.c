@@ -48,7 +48,13 @@ void default_handler(trapframe reg)
 {
     settf(&reg);
     if(reg.trap<32)
-	reg.eip+=2;
+    {
+        serial_writestring("exception from address: ");
+        serial_hexword(reg.eip);
+        serial_writestring("\n");
+	//reg.eip+=2;
+
+    }
     if(handlers[reg.trap]!=NULL)
     {
 	handlers[reg.trap](reg.err);

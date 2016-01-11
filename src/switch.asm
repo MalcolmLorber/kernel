@@ -2,7 +2,10 @@ global context_switch
 context_switch:
         mov eax, [esp+4]
         mov edx, [esp+8]
-        
+
+        ; set return of new context to current context's
+        ; address, so that we return to the proper location
+        ; in kernel memory
         mov ecx, [esp]
         mov [edx+20], ecx
 
@@ -12,10 +15,6 @@ context_switch:
         push edi
         mov ecx, cr3
         push ecx
-
-        ; CR3 PROBLEM - STACK CHANGES, CANT ACCESS NEW MEM?
-        ; WHY IS PROCS[CURPROC]->CTXT IN PROCESS MEM, NOT
-        ; IN KERNEL MEM? INTERROGATE FREMMA
 
         mov [eax], esp
         mov esp, edx

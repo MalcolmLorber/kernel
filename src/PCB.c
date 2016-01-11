@@ -55,6 +55,7 @@ int yield()
     procs[curproc]->state = RUNNABLE;
     serial_writestring("about to schedule\n");
     schedule();
+    serial_writestring("echeduled\n");
     //unlock mutex
     return 1;
 }

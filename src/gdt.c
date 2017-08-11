@@ -8,8 +8,10 @@
 uint16_t gdt_limit;
 uint32_t gdt_base;
 
+//the actual global descriptor table
 gdt_desc _gdt [MAX_GDT_DESC];
 
+//install a new gdt
 void gdt_install()
 {
     struct
@@ -28,6 +30,8 @@ void gdt_install()
                  mov %ax, %gs;			\
                  mov %ax, %ss;");
 }
+
+//set an individual descriptor in the gdt
 void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran)
 {
     if (i > MAX_GDT_DESC)
@@ -45,6 +49,8 @@ void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uin
     _gdt[i].gran = (uint8_t)((limit >> 16) & 0x0f);
     _gdt[i].gran |= gran & 0xf0;
 }
+
+//get a single descriptor from the gdt
 gdt_desc* gdt_get_desc(int i)
 {
     if (i > MAX_GDT_DESC)
@@ -53,6 +59,8 @@ gdt_desc* gdt_get_desc(int i)
     }
     return &_gdt[i];
 }
+
+//initial setup of the gdt at kernel boot
 int gdt_init()
 {
     gdt_limit = (sizeof(gdt_desc) * MAX_GDT_DESC) - 1;

@@ -11,6 +11,7 @@ int firstfree=0;
 //process* curproc;
 //process* otherproc;
 
+//add a process to the currently running processes
 void addproc(process* proc)
 {
     procs[firstfree]=proc;
@@ -18,11 +19,13 @@ void addproc(process* proc)
     //curproc=proc; 
 }
 
+//set a processes trapframe
 void settf(trapframe* tf)
 {
     procs[curproc]->tf = tf;
 }
 
+//schedule time for a process to run
 void schedule()
 {
     int old = curproc;
@@ -40,6 +43,7 @@ void schedule()
     
 }
 
+//allow a process to yield its time if it is waiting on i/o, etc
 int yield()
 {
     //lock mutex
@@ -49,21 +53,25 @@ int yield()
     return 1;
 }
 
+//a test syscall
 int print1()
 {
     terminal_writestring("1\n");
     return 1;
 }
 
+//another test syscall
 int print2()
 {
     terminal_writestring("2\n");
     return 2;
 }
 
+//list of all syscalls we support
 int(*syscalls[NUM_SYSCALLS])()={0,0,0, yield, print1, print2};
 /*NOPE, exit, fork, yield, test, test*/
 
+//delegation function for determining what syscall to call form a process
 void syscall()
 {
     int num = procs[curproc]->tf->eax;
@@ -84,6 +92,7 @@ void syscall()
     }
 }
 
+//initilization of our process table, for now just a memset
 void proc_setup()
 {
     for(int i=0;i<NUM_PROCS;i++)

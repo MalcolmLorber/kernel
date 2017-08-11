@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+//file to define and use the global descriptor table
+
 #define MAX_GDT_DESC 3
 #define GDT_ACC 0x0001
 #define GDT_RW  0x0002
@@ -17,7 +19,7 @@
 #define GDT_GR_32 0x40
 #define GDT_GR_PG 0x80
 
-typedef struct
+typedef struct //this represents a single entry in the GDT
 {
     uint16_t lim;
     uint16_t low_base;
@@ -27,6 +29,7 @@ typedef struct
     uint8_t  high_base;
 } __attribute__((packed)) gdt_desc;
 
+//functions to work with the gdt, see gdt.c for more info
 extern void gdt_set_desc(uint32_t i, uint64_t base, uint64_t limit, uint8_t access, uint8_t gran);
 extern gdt_desc* gdt_get_desc(int i);
 extern int gdt_init();

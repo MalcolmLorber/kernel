@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include "mem.h"
 
-typedef struct//all regs in proc
+//This is the definitions for the Process Control Block, used for management of processes 
+
+typedef struct//all registers needed to be stored in a process
 {
     uint32_t edi;
     uint32_t esi;
@@ -40,7 +42,7 @@ typedef struct//all regs in proc
     //uint16_t sspad;
 }__attribute__((packed)) trapframe;
 
-typedef struct//regs needed for context
+typedef struct//all registers needed for contexts
 {
     uint32_t edi;
     uint32_t esi;
@@ -49,21 +51,24 @@ typedef struct//regs needed for context
     uint32_t eip;
 }__attribute__((packed)) context;
 
+//possible process states
 enum procstate {KILLED, RUNNABLE, RUNNING};
 
-typedef struct
+typedef struct//all the data that makes up a "process"
 {
-    page_directory_entry* mem;
-    volatile int pid;
-    struct process* parent;
-    char* kstack;//apparently we need this. idk why
-    trapframe* tf;
-    context* ctxt;
-    char name[32];
-    enum procstate state;
+    page_directory_entry* mem;  //our process's allocated memory
+    volatile int pid;           //our process's id
+    struct process* parent;     //the process's parent (can be process that started this process)
+    char* kstack;               //apparently we need this. idk why
+    trapframe* tf;              //process trapframe for interrupts and errors
+    context* ctxt;              //process context for switching and calling system interrupts
+    char name[32];              //process name
+    enum procstate state;       //process state
 }__attribute__((packed)) process;
 
+//context_switch is defined in switch.asm
 extern void context_switch(context** old, context* new);
+//some basic process management functions
 void syscall();
 void addproc(process* proc);
 void settf(trapframe* tf);

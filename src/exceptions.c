@@ -1,6 +1,8 @@
 #include "exceptions.h"
 #include "serial.h"
 
+//error functions for each possible x86 error code
+
 void int_div_by_zero(uint32_t __attribute__((unused))error)
 {
     serial_writestring("DIV BY ZERO ERROR\n");
@@ -61,6 +63,8 @@ void int_page_fault(uint32_t __attribute__((unused))error)
 {
     serial_writestring("PAGE FAULT ERROR ");
     serial_hexword(error);
+    
+    //cr2 is the memory address that faulted
     uint32_t cr2;
     asm volatile("movl %%cr2, %0" : "=r" (cr2) : );
     //register uint32_t cr2 asm("%%cr2");

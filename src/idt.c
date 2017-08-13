@@ -11,12 +11,14 @@
 uint16_t idt_limit;
 uint32_t idt_base;
 
+//the actual interrrupt descriptor table
 idt_desc _idt [MAX_IDT_INT];
 
 uint16_t _code_sel;
 
 void (*handlers[256]) (uint32_t error);
 
+//installs a new idt, we just use the one
 void idt_install() 
 {
     struct
@@ -29,6 +31,7 @@ void idt_install()
     asm volatile ("lidt (%0)": :"r"(&idtr));
 }
 
+//all the possible error codes in x86, functions defined in exceptions.h and exceptions.c
 void load_error_handlers()
 {
     void(*errors[])(uint32_t)={int_div_by_zero,int_debug,int_non_maskable_interrupt,int_breakpoint,int_overflow,
@@ -44,6 +47,7 @@ void load_error_handlers()
     }
 }
 
+//default handler for all interrupts, called from idta.asm
 void default_handler(trapframe reg) 
 {
     settf(&reg);
@@ -56,6 +60,7 @@ void default_handler(trapframe reg)
     return;
 }
 
+//returns an idt entry
 idt_desc* get_ir(uint32_t i) 
 {
     if (i > MAX_IDT_INT)
@@ -65,6 +70,7 @@ idt_desc* get_ir(uint32_t i)
     return &_idt[i];
 }
 
+//adds an idt entry
 int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER irq) 
 {
     if (i > MAX_IDT_INT)
@@ -83,16 +89,20 @@ int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER irq)
     _idt[i].code_sel  = code_sel;
     return 0;
 }
+
+//adds a c function to the interrupt handlers
 void install_c_ir(uint32_t interrupt, void (*handler) (uint32_t))
 {
     handlers[interrupt]=handler;
 }
 
+//wrapper for install_ir for common case
 void idt_ftoi(int a, IRQ_HANDLER irq)
 {
     install_ir(a, IDT_PR|IDT_32, _code_sel, irq);
 }
 
+//initialization and setup of the idt
 int idt_init(uint16_t code_sel) 
 {
     idt_limit = sizeof(idt_desc) * MAX_IDT_INT -1;

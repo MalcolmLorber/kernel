@@ -15,6 +15,7 @@
 
 typedef void (*IRQ_HANDLER)(void);
 
+//interrupt descriptor table entry
 typedef struct 
 {
     uint16_t low_base;
@@ -44,7 +45,7 @@ typedef struct
     uint32_t eflags;
     }__attribute__((packed));*/
 
-    
+//interrupt handling functions, see idt.c    
 extern void default_handler(trapframe reg); 
 extern idt_desc* get_ir(uint32_t i);
 extern int install_ir(uint32_t i, uint16_t flags, uint16_t code_sel, IRQ_HANDLER);

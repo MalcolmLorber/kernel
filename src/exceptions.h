@@ -3,6 +3,7 @@
 
 #include "idt.h"
 
+//error functions for each possible x86 error code
 void int_div_by_zero(uint32_t error);
 void int_debug(uint32_t error);
 void int_non_maskable_interrupt(uint32_t error);

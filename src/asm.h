@@ -35,14 +35,17 @@ inline uint32_t inl(uint16_t port)
     return ret;
 }
 
+//interrupt depth, for nested interrupts
 uint32_t __int_depth;
 
+//enable interrupts and update interrupt depth
 inline void disable_int()
 {
     asm volatile ("cli");
     __int_depth++;
 }
 
+//disable interrupts and update interrupt depth
 inline void enable_int()
 {
     if(__int_depth>0)

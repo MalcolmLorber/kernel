@@ -4,6 +4,7 @@
 #pragma GCC push_options
 #pragma GCC optimize ("0")
 
+//read a value from a pic
 uint8_t pic_read(uint16_t pic)
 {
     if(pic>1)
@@ -14,6 +15,7 @@ uint8_t pic_read(uint16_t pic)
     return inb(reg);
 }
 
+//write a value to a pic
 void pic_write(uint16_t pic, uint8_t data)
 {
     if(pic>1)
@@ -24,6 +26,7 @@ void pic_write(uint16_t pic, uint8_t data)
     outb(reg, data);
 }
 
+//send a command to a pic
 void pic_command(uint16_t pic, uint8_t cmd)
 {
     if(pic>1)
@@ -39,6 +42,7 @@ void pic_command(uint16_t pic, uint8_t cmd)
 //    //TODO
 //}
 
+//initialize and set up initial pic config
 void pic_init(uint8_t base0, uint8_t base1)
 {
     uint8_t icw=0;

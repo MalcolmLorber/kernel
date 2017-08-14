@@ -6,6 +6,7 @@
 #include "term.h"
 #include "comp.h"
 
+//maps for keyboard input to interpret raw scancodes
 char scan_map[256] = {'\0','\0','1','2','3','4','5','6','7','8','9','0','-','=','\b','\t',
 		      'q','w','e','r','t','y','u','i','o','p','[',']','\n','\0','a','s',
 		      'd','f','g','h','j','k','l',';','\'','`','\0','\\','z','x','c','v',
@@ -23,6 +24,7 @@ int modifiers[6] = {0,0,0};
 #define MOD_CTRL 1
 #define MOD_ALT 2
 
+//helper function to write an int to the terminal
 void terminal_writeint(int n)
 {
     char f[20];
@@ -30,6 +32,7 @@ void terminal_writeint(int n)
     terminal_writestring(f);
 }
 
+//processes a terminal command after pressing enter
 void io_process(char* s, int ss)
 {
     terminal_putchar('\n');
@@ -112,6 +115,8 @@ void io_process(char* s, int ss)
     }
 }
 
+//interprets keyboard input
+//currently directly writes to terminal, should eventually write to an input buffer instead
 void kbd_irq()
 {
     int a = inb(0x60);
@@ -133,19 +138,19 @@ void kbd_irq()
     }
     else
     {
-	if(a==0x4b)
+	if(a==0x4b)//left arrow
 	{
 	    terminal_adjustcursor(-1,0);
 	}
-	else if(a==0x4d)
+	else if(a==0x4d)//right arrow
 	{
 	    terminal_adjustcursor(1,0);
 	}
-	else if(a==0x48)
+	else if(a==0x48)//up arrow
 	{
 	    terminal_adjustcursor(0,0);//-1);
 	}
-	else if(a==0x50)
+	else if(a==0x50)//down arrow
 	{
 	    terminal_adjustcursor(0,0);//1);
 	}
@@ -166,7 +171,7 @@ void kbd_irq()
 		kb_buf_size=0;
 		terminal_writestring("> ");
 	    }
-	    else if(in=='\b')
+	    else if(in=='\b')//backspace pressed
 	    {
 		if(kb_buf_size>0)
 		{
@@ -175,7 +180,7 @@ void kbd_irq()
 		    terminal_putchar(in);
 		}
 	    }
-	    else if(modifiers[MOD_CTRL]==1&&(in=='l'||in=='L'))
+	    else if(modifiers[MOD_CTRL]==1&&(in=='l'||in=='L'))//control l to clear 
 	    {
 		terminal_clear();
 		for(int i=0;i<kb_buf_size;i++)
@@ -185,7 +190,7 @@ void kbd_irq()
 		kb_buf_size=0;
 		terminal_writestring("> ");
 	    }
-	    else if(in!='\0')
+	    else if(in!='\0')//base case, we put the typed character into the terminal
 	    {
 		kb_buf[kb_buf_size]=in;
 		kb_buf_size++;
@@ -196,9 +201,10 @@ void kbd_irq()
     //else
     //terminal_putchar(scan_map[a-0x80]);
     //serial_writestring("\n");
-    pic_command(0, PIC_OCW2_EOI);
+    pic_command(0, PIC_OCW2_EOI);//signal to the pic that we processed the interrupt
 }
 
+//installs our keyboard interrupt handler to the interrupt handler
 void io_init()
 {
     install_c_ir(33, kbd_irq);

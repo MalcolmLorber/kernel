@@ -1,6 +1,8 @@
+;idta.asm sets up all the intterupt entry points
 extern default_handler
 extern idt_ftoi
-	
+
+;error interrupt entry point, we need to only push the error code details to stack
 %macro error_interrupt 1
 global interrupt_handler_%1
 interrupt_handler_%1:
@@ -8,6 +10,7 @@ interrupt_handler_%1:
 	jmp 	common_handler
 %endmacro
 
+;regular interrupt entry point, need to push interrupt number and other data
 %macro regular_interrupt 1
 global interrupt_handler_%1
 interrupt_handler_%1:
@@ -16,6 +19,7 @@ interrupt_handler_%1:
 	jmp 	common_handler
 %endmacro
 
+;common handler for all interrupts, saves all necessary stack data and calls our c intterupt handler
 common_handler:
         push dword ds
         push dword es
@@ -62,6 +66,7 @@ error_interrupt 30
 %assign i i+1
 %endrep
 
+;interrupt setup, adds all of out interrupt handlers to the idt
 	global idtsetup
 idtsetup:
 	%assign i 0

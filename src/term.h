@@ -28,9 +28,11 @@ enum vga_color
     COLOR_WHITE = 15,
 };
 
+//vga helper functions, see term.c
 uint8_t make_color(enum vga_color fg, enum vga_color bg);
 uint16_t make_vgaentry(char c, uint8_t color);
 
+//terminal handling functions, see term.c
 void terminal_initialize();
 void terminal_clear();
 void terminal_setcolor(uint8_t color);

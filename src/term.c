@@ -7,11 +7,13 @@
 #include "term.h"
 #include "asm.h"
 
+//create a vga color code from the two vga color constants
 uint8_t make_color(enum vga_color fg, enum vga_color bg) 
 {
     return fg | bg << 4;
 }
 
+//create a proper character for vga using a character and a color code
 uint16_t make_vgaentry(char c, uint8_t color) 
 {
     uint16_t c16 = c;
@@ -19,14 +21,19 @@ uint16_t make_vgaentry(char c, uint8_t color)
     return c16 | color16 << 8;
 }
 
+//terminal size, const for now
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 
+//keeping track of our cursor
 size_t terminal_row;
 size_t terminal_column;
+//current color scheme
 uint8_t terminal_color;
+//buffer for holding current terminal state
 uint16_t* terminal_buffer;
 
+//changes the location of the cursor on screen
 void update_csr()
 {
     unsigned temp = terminal_row*80+terminal_column;
@@ -36,6 +43,7 @@ void update_csr()
     outb(0x3D5, temp);
 }
 
+//scrolls our terminal by one line
 void terminal_scroll()
 {
     for(size_t y=0;y<VGA_HEIGHT-1;y++)
@@ -51,6 +59,7 @@ void terminal_scroll()
     }
 }
 
+//clears the terminal
 void terminal_clear()
 {
     for(size_t y=0;y<VGA_HEIGHT;y++)
@@ -63,6 +72,7 @@ void terminal_clear()
     terminal_row = terminal_column = 0;
 }
 
+//setup of terminal
 void terminal_initialize() 
 {
     terminal_row = 0;
@@ -79,17 +89,20 @@ void terminal_initialize()
     }
 }
 
+//change terminal color, only applies to future updates
 void terminal_setcolor(uint8_t color) 
 {
     terminal_color = color;
 }
 
+//add a character anywhere on screen
 void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) 
 {
     const size_t index = y * VGA_WIDTH + x;
     terminal_buffer[index] = make_vgaentry(c, color);
 }
 
+//add a character at the cursor and advance the cursor
 void terminal_putchar(char c) 
 {
     if(c=='\b')
@@ -133,6 +146,7 @@ void terminal_putchar(char c)
     update_csr();
 }
 
+//allow printing of hexadecimal numbers cleanly
 const char* hexcharss = "0123456789abcdef";
 void terminal_hexstring(void* s, uint32_t n) 
 {
@@ -144,7 +158,7 @@ void terminal_hexstring(void* s, uint32_t n)
     }
 }
 
-
+//write a whole string at the cursor
 void terminal_writestring(const char* data) 
 {
     size_t datalen = strlen(data);
@@ -153,6 +167,8 @@ void terminal_writestring(const char* data)
 	terminal_putchar(data[i]);
     }
 }
+
+//move the cursor to a given position
 void terminal_movecursor(size_t x, size_t y)
 {
     if(x>=VGA_WIDTH || y>= VGA_HEIGHT) return;
@@ -160,6 +176,8 @@ void terminal_movecursor(size_t x, size_t y)
     terminal_row=y;
     update_csr();
 }
+
+//offset the cursor from its current position by a given amount
 void terminal_adjustcursor(int x, int y)
 {
     terminal_column+=x;

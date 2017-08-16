@@ -8,9 +8,9 @@
 //mutex structure
 typedef struct
 {
-    uint32_t lock_var;
-    uint32_t value;
-    uint32_t thread_id;
+    uint32_t lock_var;  //the actual variable that acts as a lock
+    uint32_t value;     //to allow multi-locks
+    uint32_t thread_id; //the id of the thread that locked the mutex (TO BE IMPLEMENTED)
 }__attribute__((packed)) mutex;
 
 //mutex handling funcitons, see mutex.c

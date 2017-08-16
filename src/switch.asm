@@ -1,3 +1,7 @@
+;contex switch function
+;saves all relevant registers to the stack
+;then changes esp to our new location
+;and reforms the registers based on the stack at the new location
 global context_switch
 context_switch:
         mov eax, [esp+4]

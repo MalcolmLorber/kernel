@@ -1,5 +1,6 @@
 #include "mutex.h"
 
+//properly instantiates a new mutex
 mutex mutex_create()
 {
     mutex m;
@@ -9,8 +10,10 @@ mutex mutex_create()
     return m;
 }
 
+//lock a mutex, in future should also note thread id of locker
 uint32_t mutex_lock(mutex m)
 {
+    //atomic exchange instruction for use as mutex
     asm volatile
     (
      "mov $1, %%eax;       \
@@ -22,8 +25,10 @@ uint32_t mutex_lock(mutex m)
     return m.value;
 }
 
+//unlock a mutex, in future should also only allow locker to unlock
 uint32_t mutex_unlock(mutex m)
 {
+    //atomic exchange instruction for use as mutex
     asm volatile
     (
      "mov $0, %%eax;       \
